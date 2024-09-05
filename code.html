@@ -1,0 +1,95 @@
+@extends('layouts.template')
+@section('another_CSS')
+<link rel="stylesheet" href="{{asset('css/datatable/dataTables.checkboxes.css')}}">
+<link rel="stylesheet" href="{{asset('css/select2-bootstrap-5-theme.min.css')}}">
+@endsection
+
+@section('content')
+<div class="row col-12 pb-5">
+    <div class="my-3">
+        <h4 class="font-medium text-color-avt">Ajouter les notes</h4>
+    </div>
+    <div class="card py-5">
+        <form action="{{ route('ratio.store') }}" method="POST">
+            @csrf
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="year" class="font-medium form-label fs-16 text-label">
+                            Année Scolaire
+                        </label>
+                        <select class="form-select bg-form" name="year" id="year"
+                            aria-label="Sélectionnez l'année scolaire">
+                            <option selected disabled class="text-secondary">Choisissez la classe</option>
+                            @foreach ($years as $year)
+                                <option value="{{ $year->id }}">{{$year->year}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="classroom" class="font-medium form-label fs-16 text-label">
+                            Classe
+                        </label>
+                        <select class="form-select bg-form" name="classroom" id="classroom"
+                            aria-label="Sélectionnez une classe">
+                            <option selected disabled class="text-secondary">Choisissez la classe</option>
+                            @foreach ($classrooms as $classroom)
+                                <option value="{{ $classroom->id }}">{{$classroom->classroom}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="student" class="font-medium form-label fs-16 text-label">
+                            Elève
+                        </label>
+                        <select class="form-select bg-form" name="student" id="student"
+                            aria-label="Sélectionnez l'élève">
+                            <option selected disabled class="text-secondary">Sélectionnez l'élève</option>
+                            @foreach ($students as $student)
+                                <option value="{{ $student->id }}">{{$student->name}} {{$student->surname}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="subject" class="font-medium form-label fs-16 text-label">
+                            Matière
+                        </label>
+                        <select class="form-select bg-form" name="subject" id="subject"
+                            aria-label="Sélectionnez une classe">
+                            <option selected disabled class="text-secondary">Sélectionnez la matière</option>
+                            @foreach ($subjects as $subject)
+                                <option value="{{ $subject->id }}">{{$subject->subject}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-12 col-md-4 mb-3">
+                        <label for="ratio" class="font-medium form-label fs-16 text-label">
+                            Coefficient
+                        </label>
+                        <select class="form-select bg-form" name="ratio" id="ratio"
+                            aria-label="Sélectionnez une classe">
+                            <option selected disabled class="text-secondary">Choisissez le coefficent</option>
+                            @foreach ($ratios as $ratio)
+                                <option value="{{ $ratio->id }}">{{$ratio->ratio}}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                </div>
+                <div class="col-12 col-md-12 mb-3">
+                    <label for="note" class="font-medium fs-16 text-black form-label">
+                        Moyenne non coefficié
+                    </label>
+                    <input type="number"  name="note" id="note" class="form-control bg-form"
+                        placeholder="Entrez le coefficient" >
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+
+</div>
+@endsection
+Je voudrais que la liste des élèves se charge automatiquement quand on sélectionne l'année scolaire et la classe en se basant sur la table recording qui possède student_id, classroom_id et year_id mais aussi que le coefficient soit automatique en se basant sur la table ratio qui possède subject_id

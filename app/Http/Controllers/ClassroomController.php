@@ -1,0 +1,71 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Classroom;
+use App\Models\Student;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Http\Request;
+
+class ClassroomController extends Controller
+{
+    public function create(){
+        try{
+            $classrooms=Classroom::query()->get();
+            return view('dashboard.classrooms.create',compact('classrooms'));
+        }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+    public function store(Request $request) {
+        try {
+                Classroom::query()->create([
+                'classroom'=>$request->classroom,
+            ]);
+            return redirect()->back();
+        }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+
+    public function update(Request $request,Classroom $classroom){
+        try {
+            $classroom->update([
+                'classroom' => $request->classroom,
+            ]);
+            return  redirect()->route('dashboard.classrooms.create');
+            }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+    public function edit(Classroom $Classroom){
+        try {
+            return view('dashboard.classrooms.edit',compact('classroom'));
+        }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+
+    public function destroy (Classroom $classroom){
+        try {
+            $classroom->delete();
+        return redirect()->back();
+        }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+    public function show(Classroom $classroom){
+        try {
+            $students= Student::query()->where(['classroom_id'=>$classroom->id])->get();
+            return view('dashboard.classrooms.show',compact('classroom','students'));
+        }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+}
