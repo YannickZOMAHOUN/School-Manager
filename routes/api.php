@@ -17,3 +17,9 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+Route::get('years', [\App\Http\Controllers\YearController::class, 'index']);
+Route::get('classrooms', [\App\Http\Controllers\ClassroomController::class, 'index']);
+Route::get('students', [\App\Http\Controllers\StudentController::class, 'index']);
+Route::get('subjects', [\App\Http\Controllers\SubjectController::class, 'index']);
+Route::get('ratio', [\App\Http\Controllers\RatioController::class, 'show']);
+Route::post('notes', [\App\Http\Controllers\NoteController::class, 'store']);

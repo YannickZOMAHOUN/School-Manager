@@ -1,3 +1,4 @@
+@li
 <div>
     <h4 class="font-medium text-color-avt">Ajouter les notes</h4>
 
@@ -55,21 +56,20 @@
                 <label for="ratio" class="font-medium form-label fs-16 text-label">Coefficient</label>
                 <input wire:model="ratio_id" type="number" class="form-control bg-form" readonly>
             </div>
+
+            <div class="col-12 col-md-4 mb-3">
+                <label for="semester" class="font-medium form-label fs-16 text-label">Semestre</label>
+                <select class="form-select bg-form" wire:model="semester" id="semester">
+                    <option selected disabled class="text-secondary">Choisissez le semestre</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                </select>
+            </div>
         </div>
-        <div class="col-12 col-md-4 mb-3">
-            <label for="semester" class="font-medium form-label fs-16 text-label">
-                Semestre
-            </label>
-            <select class="form-select bg-form" name="semester" id="semester"
-            aria-label="Sélectionnez une matière">
-            <option selected disabled class="text-secondary">Choisissez le semestre</option>
-            <option value="1">1</option>
-            <option value="2">2</option>
-            </select>
-        </div>
+
         <div class="col-12 col-md-12 mb-3">
             <label for="note" class="font-medium fs-16 text-black form-label">Moyenne non coefficiée</label>
-            <input wire:model="note" type="number" class="form-control bg-form" placeholder="Entrez la note">
+            <input wire:model="note" type="number" step="0.1" class="form-control bg-form" placeholder="Entrez la note">
         </div>
 
         <div class="row d-flex justify-content-center mt-2">
@@ -77,4 +77,3 @@
         </div>
     </form>
 </div>
-
