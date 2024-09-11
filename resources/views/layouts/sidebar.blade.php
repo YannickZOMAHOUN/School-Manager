@@ -16,6 +16,14 @@
               <span>Les Notes</span>
             </a>
           </li>
+
+         <!-- <li class="nav-item">
+            <a class="nav-link collapsed" href="{{ route('notes.show') }}">
+              <i class="bi bi-person"></i>
+              <span>Moyenne</span>
+            </a>
+          </li>-->
+
         <li class="nav-item">
             <a class="nav-link collapsed " data-bs-target="#students-nav" data-bs-toggle="collapse" href="#">
                 <i class="bi bi-gear" ></i><span>&nbsp;Elèves</span><i class="bi bi-chevron-down ms-auto"></i>

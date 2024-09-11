@@ -30,22 +30,17 @@ class StudentController extends Controller
         $classrooms = Classroom::all();
         $years = Year::all();
 
-        $students = Student::query()
-            ->when($request->classroom_id, function ($query) use ($request) {
-                return $query->whereHas('recordings', function ($q) use ($request) {
-                    $q->where('classroom_id', $request->classroom_id);
-                });
-            })
-            ->when($request->year_id, function ($query) use ($request) {
-                return $query->whereHas('recordings', function ($q) use ($request) {
-                    $q->where('year_id', $request->year_id);
-                });
-            })
-            ->get();
-
-        return view('dashboard.students.list', compact('students', 'classrooms', 'years'));
+        return view('dashboard.students.list', compact('classrooms', 'years'));
     }
+    public function getStudentLists(Request $request)
+    {
+        $students = Student::whereHas('recordings', function($query) use ($request) {
+            $query->where('classroom_id', $request->classroom_id)
+                  ->where('year_id', $request->year_id);
+        })->get();
 
+        return response()->json(['students' => $students]);
+    }
 
     // Stocke un nouvel étudiant dans la base de données
     public function store(Request $request) {
@@ -159,4 +154,6 @@ class StudentController extends Controller
             abort(404);
         }
     }
+
+
 }

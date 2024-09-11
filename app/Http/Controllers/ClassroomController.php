@@ -35,13 +35,13 @@ class ClassroomController extends Controller
             $classroom->update([
                 'classroom' => $request->classroom,
             ]);
-            return  redirect()->route('dashboard.classrooms.create');
+            return  redirect()->route('classroom.create');
             }catch (\Exception $e){
             Log::info($e->getMessage());
             abort(404);
         }
     }
-    public function edit(Classroom $Classroom){
+    public function edit(Classroom $classroom){
         try {
             return view('dashboard.classrooms.edit',compact('classroom'));
         }catch (\Exception $e){
@@ -54,15 +54,6 @@ class ClassroomController extends Controller
         try {
             $classroom->delete();
         return redirect()->back();
-        }catch (\Exception $e){
-            Log::info($e->getMessage());
-            abort(404);
-        }
-    }
-    public function show(Classroom $classroom){
-        try {
-            $students= Student::query()->where(['classroom_id'=>$classroom->id])->get();
-            return view('dashboard.classrooms.show',compact('classroom','students'));
         }catch (\Exception $e){
             Log::info($e->getMessage());
             abort(404);

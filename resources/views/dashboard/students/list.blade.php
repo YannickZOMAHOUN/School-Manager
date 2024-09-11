@@ -1,8 +1,8 @@
 @extends('layouts.template')
 
 @section("another_CSS")
-<link rel="stylesheet" href="{{asset('css/datatable/bootstrap.css')}}">
-<link rel="stylesheet" href="{{asset('css/datatable/dataTables.bootstrap4.min.css')}}">
+<link rel="stylesheet" href="{{ asset('css/datatable/bootstrap.css') }}">
+<link rel="stylesheet" href="{{ asset('css/datatable/dataTables.bootstrap4.min.css') }}">
 @endsection
 
 @section("content")
@@ -14,118 +14,171 @@
 <!-- Formulaire de sélection de la classe et de l'année scolaire -->
 <form method="GET" action="{{ route('student.index') }}" class="mb-4">
     <div class="row">
-        <div class="col-md-6">
-            <label for="classroom" class="form-label">Classe</label>
-            <select name="classroom_id" id="classroom" class="form-select">
-                @foreach($classrooms as $classroom)
-                    <option value="{{ $classroom->id }}" {{ request('classroom_id') == $classroom->id ? 'selected' : '' }}>
-                        {{ $classroom->classroom }}
-                    </option>
+        <div class="col-12 col-md-6 mb-3">
+            <label for="classroom" class="font-medium form-label fs-16 text-label">
+                Classe
+            </label>
+            <select class="form-select bg-form" name="classroom" id="classroom"
+                aria-label="Sélectionnez une classe">
+                <option selected disabled class="text-secondary">Choisissez la classe</option>
+                @foreach ($classrooms as $classroom)
+                    <option value="{{ $classroom->id }}">{{$classroom->classroom}}</option>
                 @endforeach
             </select>
         </div>
-        <div class="col-md-6">
-            <label for="year" class="form-label">Année Scolaire</label>
-            <select name="year_id" id="year" class="form-select">
-                @foreach($years as $year)
-                    <option value="{{ $year->id }}" {{ request('year_id') == $year->id ? 'selected' : '' }}>
-                        {{ $year->year }}
-                    </option>
-                @endforeach
-            </select>
-        </div>
-    </div>
-    <div class="mt-3">
-        <button type="submit" class="btn btn-primary">Afficher les élèves</button>
+         <div class="col-12 col-md-6 mb-3">
+                        <label for="year" class="font-medium form-label fs-16 text-label">
+                            Année Scolaire
+                        </label>
+                        <select class="form-select bg-form" name="year" id="year" aria-label="Sélectionnez l'année scolaire">
+                            <option selected disabled class="text-secondary">Choisissez l'année scolaire</option>
+                            @foreach ($years as $year)
+                                <option value="{{ $year->id }}">{{$year->year}}</option>
+                            @endforeach
+                        </select>
+                    </div>
     </div>
 </form>
 
 <div class="card p-3">
     <div class="table-responsive">
-        <table id="example" class="table table-striped table-bordered" style="width:100%">
+        <table class="table mt-3" id="students">
             <thead>
-                <tr class="text-center">
+                <tr>
                     <th>Matricule</th>
                     <th>Nom</th>
                     <th>Prénom(s)</th>
+                    <th>Sexe</th>
                     <th>Date de Naissance</th>
                     <th>Lieu de Naissance</th>
                     <th>Actions</th>
                 </tr>
             </thead>
             <tbody>
-                @foreach($students as $student)
                 <tr>
-                    <td>{{ $student->matricule }}</td>
-                    <td>{{ $student->name }}</td>
-                    <td>{{ $student->surname }}</td>
-                    <td>{{ \Carbon\Carbon::parse($student->birthday)->format('d/m/Y') }}</td> <!-- Format jour-mois-année -->
-                    <td>{{ $student->birthplace }}</td>
-                    <td class="text-center" style="cursor: pointer">
-                        <a class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="Note de l'élève" href=> <i class="bi bi-printer"></i> </a>
-                        &nbsp;
-                        <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top"
-                            title="Editer l'élève" href="{{route('student.edit', $student)}}"> <i
-                                class="fas fa-pen"></i> </a>
-                        &nbsp;
-                        <a data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer cet élève" class="">
-                            <i data-bs-toggle="modal" data-bs-target="#delete_student{{$student->id }}"
-                                class="fas fa-trash-alt text-danger"></i>
-                        </a>
-                    </td>
+                    <td colspan="7" class="text-center">Sélectionnez l'année scolaire et la classe pour afficher la liste des élèves</td>
                 </tr>
-                <!-- Modal de confirmation de suppression -->
-                <div class="modal fade" id="delete_student{{$student->id }}" tabindex="-1">
-                    <div class="modal-dialog modal-dialog-centered">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <h5 class="modal-title text-color-avt">Confirmer suppression de l'élève</h5>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal"
-                                    aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <form action="{{route('student.destroy',$student) }}" method="POST">
-                                    @csrf
-                                    @method('delete')
-                                    <div class="d-flex justify-content-center">
-                                        <button type="button" class="btn btn-secondary"
-                                            data-bs-dismiss="modal">Annuler</button>
-                                        <button type="submit" class="btn btn-danger ms-2">Confirmer</button>
-                                    </div>
-                                </form>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                @endforeach
             </tbody>
         </table>
     </div>
 </div>
 
-@endsection
+<!-- Modal de suppression générique -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <form id="deleteForm" method="POST">
+      @csrf
+      @method('DELETE')
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+        </div>
+        <div class="modal-body">
+          Êtes-vous sûr de vouloir supprimer cet élève ?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+          <button type="submit" class="btn btn-danger">Supprimer</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>
 
-@section("another_Js")
-    <script src="{{asset('js/datatable/jquery-3.5.1.js')}}"></script>
-    <script src="{{asset('js/datatable/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset('js/datatable/dataTables.bootstrap4.min.js')}}"></script>
+<!-- Inclure jQuery et Bootstrap JS si ce n'est pas déjà fait dans ton layout -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Bootstrap JS (v5) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
-    <script>
-        $(document).ready(function(){
-            $('#example').DataTable(
-                {
-                    "language": {
-                        "url": "{{asset('js/datatable/French.json')}}"
+<script type="text/javascript">
+    $(document).ready(function () {
+        // Charger dynamiquement les élèves lorsque la classe et l'année sont sélectionnées
+        $('#classroom, #year').change(function () {
+            let yearId = $('#year').val();
+            let classroomId = $('#classroom').val();
+
+            if (yearId && classroomId) {
+                $.ajax({
+                    url: '{{ route("get.student.lists") }}',
+                    type: 'GET',
+                    data: {
+                        year_id: yearId,
+                        classroom_id: classroomId
                     },
-                    responsive: true,
-                    "columnDefs": [ {
-                        "targets": -1,
-                        "orderable": false
-                    } ]
-                }
-            );
-            $('.alert').alert('close')
+                    success: function (data) {
+                        let studentsHtml = '';
+                        if (data.students.length) {
+                            data.students.forEach(function (student) {
+                                // Option 1: Si la date est formatée côté serveur
+                                // let formattedBirthday = student.birthday;
+
+                                // Option 2: Formatage côté client
+                                let formattedBirthday = formatDate(student.birthday);
+
+                                let showUrl = '{{ route("note.show", [":id"]) }}';
+showUrl = showUrl.replace(':id', student.id) + `?year=${yearId}&classroom=${classroomId}`;
+
+                                let editUrl = '{{ route("student.edit", ":id") }}';editUrl = editUrl.replace(':id', student.id);
+  // Pour la suppression, on utilise un modal générique
+
+                                studentsHtml += `
+                                    <tr>
+                                        <td>${student.matricule}</td>
+                                        <td>${student.name}</td>
+                                        <td>${student.surname}</td>
+                                        <td>${student.sex}</td>
+                                        <td>${formattedBirthday}</td>
+                                        <td>${student.birthplace}</td>
+                                        <td class="text-center" style="cursor: pointer">
+                                            <a class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Moyenne de l'élève" href="${showUrl}"> <i class="fas fa-eye"></i> </a>
+                                            &nbsp;
+                                            <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top"
+                                                title="Modifier les informations" href="${editUrl}"> <i class="fas fa-pen"></i> </a>
+                                            &nbsp;
+                                            <a href="javascript:void(0);" data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer l'élève" class="delete-button" data-id="${student.id}">
+                                                <i class="fas fa-trash-alt text-danger"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                `;
+                            });
+                            $('#students tbody').html(studentsHtml);
+                        } else {
+                            $('#students tbody').html('<tr><td colspan="7" class="text-center">Aucun élève trouvé.</td></tr>');
+                        }
+
+                        // Initialiser les tooltips
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                          return new bootstrap.Tooltip(tooltipTriggerEl)
+                        });
+                    },
+                    error: function () {
+                        alert('Une erreur est survenue lors du chargement des élèves.');
+                    }
+                });
+            }
         });
-    </script>
+
+        // Fonction de formatage de la date
+        function formatDate(dateString) {
+            let date = new Date(dateString);
+            let day = String(date.getDate()).padStart(2, '0');
+            let month = String(date.getMonth() + 1).padStart(2, '0');
+            let year = date.getFullYear();
+            return `${day}/${month}/${year}`;
+        }
+
+        // Gestion du clic sur le bouton de suppression
+        $(document).on('click', '.delete-button', function () {
+            let studentId = $(this).data('id');
+            let deleteUrl = '{{ route("student.destroy", ":id") }}'.replace(':id', studentId);
+            $('#deleteForm').attr('action', deleteUrl);
+            $('#deleteModal').modal('show');
+        });
+
+    });
+</script>
 @endsection

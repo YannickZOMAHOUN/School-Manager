@@ -56,11 +56,9 @@
                     <tr>
                         <td>{{ $classroom->classroom }}</td>
                         <td class="text-center" style="cursor: pointer">
-                            <a class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top" title="Détails de la classe " href="{{route('classroom.show', $classroom)}}"> <i class="bi bi-printer"></i> </a>
-                            &nbsp;
                             <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Editer la classe" href="{{route('classroom.edit', $classroom)}}"> <i class="fas fa-pen"></i> </a>
                             &nbsp;
-                            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer la classe" class="">
+                            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer cette classe " class="">
                                     <i data-bs-toggle="modal" data-bs-target="#delete_classroom{{$classroom->id }}" class="fas fa-trash-alt text-danger" ></i>
                             </a>
                         </td>
@@ -69,7 +67,7 @@
                                 <div class="modal-dialog modal-dialog-centered">
                                     <div class="modal-content">
                                         <div class="modal-header">
-                                            <h5 class="modal-title text-color-avt">Confirmer suppression de la classe</h5>
+                                            <h5 class="modal-title text-color-avt">Confirmer suppression de la classe {{ $classroom->classroom }}</h5>
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
