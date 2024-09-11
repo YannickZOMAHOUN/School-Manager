@@ -12,6 +12,7 @@ class Ratio extends Model
         'ratio',
         'subject_id',
         'classroom_id',
+        'school_id',
     ];
 
     public function notes(){
@@ -22,5 +23,8 @@ class Ratio extends Model
     }
     public function classroom(){
         return $this->belongsTo(Classroom::class);
+    }
+    public function school(){
+        return $this->belongsTo(School::class);
     }
 }

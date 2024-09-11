@@ -16,9 +16,13 @@ class Student extends Model
         'sex',
         'birthday',
         'birthplace',
+        'school_id',
     ];
 
     public function recordings(){
         return $this->hasMany(Recording::class);
+    }
+    public function school(){
+        return $this->belongsTo(School::class);
     }
 }

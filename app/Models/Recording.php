@@ -12,6 +12,7 @@ class Recording extends Model
         'student_id',
         'year_id',
         'classroom_id',
+        'school_id',
     ];
     public function student(){
         return $this->belongsTo(Student::class);
@@ -25,5 +26,7 @@ class Recording extends Model
     public function notes(){
         return $this->hasMany(Note::class);
     }
-
+    public function school(){
+        return $this->belongsTo(School::class);
+    }
 }

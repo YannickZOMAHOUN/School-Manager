@@ -10,6 +10,7 @@ class Classroom extends Model
     use HasFactory;
     protected $fillable=[
         'classroom',
+        'school_id',
     ];
 
     public function recordings(){
@@ -18,5 +19,7 @@ class Classroom extends Model
     public function ratios(){
         return $this->hasMany(Ratio::class);
 }
-
+public function school(){
+    return $this->belongsTo(School::class);
+}
 }

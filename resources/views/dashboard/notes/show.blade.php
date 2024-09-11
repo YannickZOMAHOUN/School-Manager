@@ -15,19 +15,19 @@
             @csrf
             <div class="card-body">
                 <div class="row">
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label for="year" class="font-medium form-label fs-16 text-label">Année Scolaire</label>
                         <p>{{ $recording->year->year }}</p>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label for="classroom" class="font-medium form-label fs-16 text-label">Classe</label>
                         <p>{{ $recording->classroom->classroom }}</p>
                     </div>
-                    <div class="col-12 col-md-4 mb-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label for="student" class="font-medium form-label fs-16 text-label">Élève</label>
                         <p>{{ $recording->student->name }} {{ $recording->student->surname }}</p>
                     </div>
-                    <div class="col-12 col-md-6 mb-3">
+                    <div class="col-12 col-md-3 mb-3">
                         <label for="semester" class="font-medium form-label fs-16 text-label">Semestre</label>
                         <select class="form-select bg-form" name="semester" id="semester">
                             <option selected disabled class="text-secondary">Choisissez le semestre</option>
@@ -40,7 +40,7 @@
         </form>
 
         <!-- Affichage des informations de l'élève et de la classe -->
-        <div id="student-info" class="mt-4"></div>
+
 
         <!-- Tableau des notes et moyennes coefficientées -->
         <table class="table mt-3" id="notes-table">
@@ -59,10 +59,6 @@
                 </tr>
             </tbody>
             <tfoot>
-                <tr id="rang-row">
-                    <th colspan="4" class="text-end">Rang :</th>
-                    <th id="rang" class="text-end"></th>
-                </tr>
                 <tr>
                     <th colspan="4" class="text-end">Total :</th>
                     <th id="total-moyenne-coefficiee" class="text-end"></th>
@@ -77,7 +73,7 @@
                 </tr>
             </tfoot>
         </table>
-
+        <div id="student-info" class="mt-4"></div>
     </div>
 </div>
 
@@ -113,8 +109,6 @@
                     },
                     success: function (data) {
                         $('#student-info').html(`
-                            <p><strong>Élève :</strong> ${data.student_name}</p>
-                            <p><strong>Classe :</strong> ${data.classroom}</p>
                             ${semester == 1 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>` : ''}
                             ${semester == 2 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>
                             <p><strong>Rang Annuel :</strong> ${data.rank_annuel ? formatRank(data.rank_annuel) : 'N/A'}</p>` : ''}

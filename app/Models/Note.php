@@ -12,7 +12,8 @@ class Note extends Model
         'note',
         'recording_id',
         'ratio_id',
-        'subject_id'
+        'subject_id',
+        'school_id',
     ];
 
     public function subject(){
@@ -24,5 +25,7 @@ class Note extends Model
     public function recording(){
         return $this->belongsTo(Recording::class);
     }
-
+    public function school(){
+        return $this->belongsTo(School::class);
+    }
 }

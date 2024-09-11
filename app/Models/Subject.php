@@ -11,6 +11,7 @@ class Subject extends Model
     use HasFactory;
     protected $fillable=[
         'subject',
+        'school_id',
     ];
 
     public function notes(){
@@ -18,5 +19,8 @@ class Subject extends Model
     }
     public function ratios(){
         return $this->hasMany(Ratio::class);
+    }
+    public function school(){
+        return $this->belongsTo(School::class);
     }
 }

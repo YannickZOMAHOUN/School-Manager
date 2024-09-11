@@ -5,18 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Year extends Model
+class Staff extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'year',
+        'name',
+        'surname',
+        'sex',
+        'address',
+        'number',
         'school_id',
-    ];
+        'role_id',
 
-    public function recordings(){
-        return $this->hasMany(Recording::class);
-    }
+    ];
     public function school(){
         return $this->belongsTo(School::class);
+    }
+    public function role(){
+        return $this->belongsTo(Role::class);
     }
 }
