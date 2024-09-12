@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('sex');
             $table->date('birthday');
             $table->string('birthplace');
-            $table->unsignedBigInteger('school_id');
+            $table->unsignedBigInteger('school_id')->nullable();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->timestamps();
         });

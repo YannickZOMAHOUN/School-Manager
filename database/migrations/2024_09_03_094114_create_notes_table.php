@@ -21,7 +21,7 @@ return new class extends Migration
             $table->foreign('ratio_id')->references('id')->on('ratios')->onDelete('cascade');
             $table->foreign('recording_id')->references('id')->on('recordings')->onDelete('cascade');
             $table->foreign('subject_id')->references('id')->on('subjects')->onDelete('cascade');
-            $table->unsignedBigInteger('school_id');
+            $table->unsignedBigInteger('school_id')->nullable();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->timestamps();
         });

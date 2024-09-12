@@ -9,8 +9,9 @@ class School extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'school',
-        
+        'cod_school',
+        'school_name'
+
     ];
 
     public function recordings(){

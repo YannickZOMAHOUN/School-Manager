@@ -14,8 +14,10 @@ class Staff extends Model
         'sex',
         'address',
         'number',
+        'user_id',
         'school_id',
         'role_id',
+
 
     ];
     public function school(){
@@ -24,4 +26,5 @@ class Staff extends Model
     public function role(){
         return $this->belongsTo(Role::class);
     }
+    
 }
