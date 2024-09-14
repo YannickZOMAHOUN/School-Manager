@@ -43,6 +43,7 @@ class StudentsImport implements ToModel
             'student_id' => $student->id,
             'classroom_id' => $this->classroom_id,
             'year_id' => $this->year_id,
+            'school_id' => auth()->user()->school_id,
         ]);
 
         return $student;

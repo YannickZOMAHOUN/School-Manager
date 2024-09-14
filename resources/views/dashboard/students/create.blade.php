@@ -35,7 +35,10 @@
                 <input type="file" name="file" id="file" class="form-control" required>
             </div>
 
-            <button type="submit" class="btn btn-primary">Importer</button>
+            <div class="row d-flex justify-content-center mt-2">
+                <button type="reset" class="btn bg-secondary w-auto me-2 text-white">Annuler</button>
+                <button type="submit"  class="btn btn-success w-auto">Importer la liste des élèves</button>
+            </div>
         </form>
      </div>
 
@@ -73,8 +76,36 @@
                     <label for="matricue">Matricule</label>
                     <input type="text" name="matricule" id="matricule" class="form-control bg-form " >
                 </div>
+                <div class="col-md-6">
+                    <label for="sex" class="form-label font-medium text-color-avt">Sexe</label>
+                    <select name="sex" id="sex" class="form-control " required>
+                        <option value="M" {{ old('sex') == 'M' ? 'selected' : '' }}>Masculin</option>
+                        <option value="F" {{ old('sex') == 'F' ? 'selected' : '' }}>Féminin</option>
+                    </select>
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary">Importer</button>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="name" class="form-label font-medium text-color-avt">Nom de l'élève</label>
+                    <input type="text" name="name" id="name" class="form-control bg-form " >
+                </div>
+                <div class="col-md-6">
+                    <label for="surname" class="form-label font-medium text-color-avt">Prénom</label>
+                    <input type="text" name="surname" id="surname" class="form-control bg-form " >                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-6">
+                    <label for="birthday" class="form-label font-medium text-color-avt">Date de Naissance</label>
+                    <input type="date" name="birthday" id="birthday" class="form-control bg-form " >
+                </div>
+                <div class="col-md-6">
+                    <label for="birthplace" class="form-label font-medium text-color-avt">Lieu de Naissance</label>
+                    <input type="text" name="birthplace" id="birthplace" class="form-control bg-form " >                </div>
+            </div>
+            <div class="row d-flex justify-content-center mt-2">
+                <button type="reset" class="btn bg-secondary w-auto me-2 text-white">Annuler</button>
+                <button type="submit"  class="btn btn-success w-auto">Enregistrer</button>
+            </div>
         </form>
      </div>
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Classroom;
 use App\Models\Student;
 use App\Models\Year;
+use App\Models\Recording;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\StudentsImport;
 use Illuminate\Support\Facades\Log;
@@ -13,11 +14,11 @@ use Illuminate\Http\Request;
 class StudentController extends Controller
 {
     // Affiche la vue de création d'un étudiant
-    public function create(){
+    public function create() {
         try {
             $classrooms = Classroom::all();
             $years = Year::all();
-            return view('dashboard.students.create', compact('classrooms','years'));
+            return view('dashboard.students.create', compact('classrooms', 'years'));
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'accès à la page de création : " . $e->getMessage());
             abort(404);
@@ -25,26 +26,26 @@ class StudentController extends Controller
     }
 
     // Liste tous les étudiants
-    public function index(Request $request)
-    {
+    public function index(Request $request) {
         $classrooms = Classroom::all();
         $years = Year::all();
         $school_id = auth()->user()->school_id;
-        return view('dashboard.students.list', compact('classrooms', 'years','school_id'));
+        return view('dashboard.students.list', compact('classrooms', 'years', 'school_id'));
     }
-    public function getStudentLists(Request $request)
-{
-    $students = Student::whereHas('recordings', function($query) use ($request) {
-        $query->where('classroom_id', $request->classroom_id)
-              ->where('year_id', $request->year_id);
-    })
-    ->where('school_id', $request->school_id) // Ajouté
-    ->get();
 
-    return response()->json(['students' => $students]);
-}
+    // Récupère la liste des étudiants
+    public function getStudentLists(Request $request) {
+        $students = Student::whereHas('recordings', function($query) use ($request) {
+            $query->where('classroom_id', $request->classroom_id)
+                  ->where('year_id', $request->year_id);
+        })
+        ->where('school_id', $request->school_id) // Ajouté
+        ->get();
 
-    // Stocke un nouvel étudiant dans la base de données
+        return response()->json(['students' => $students]);
+    }
+
+    // Ajoute un étudiant
     public function store(Request $request) {
         $request->validate([
             'matricule' => 'required|string|max:50|unique:students,matricule',
@@ -52,27 +53,33 @@ class StudentController extends Controller
             'surname' => 'required|string|max:100',
             'sex' => 'required|string|max:10',
             'birthday' => 'required|date',
-            'birth_place' => 'required|string|max:100',
-            'classroom_id' => 'required|exists:classrooms,id',
+            'birthplace' => 'required|string|max:100',
         ]);
 
         try {
-            Student::create([
+            $student = Student::create([
                 'matricule' => $request->matricule,
                 'name' => $request->name,
                 'surname' => $request->surname,
                 'sex' => $request->sex,
                 'birthday' => $request->birthday,
-                'birth_place' => $request->birth_place,
-                'classroom_id' => $request->classroom_id,
+                'birthplace' => $request->birthplace,
+                'school_id' => auth()->user()->school_id,
             ]);
-            return redirect()->route('student.index')->with('success', 'Étudiant ajouté avec succès!');
+
+            // Enregistrement dans la table recording
+            Recording::create([
+                'student_id' => $student->id,
+                'classroom_id' => $request->classroom_id,
+                'year_id' => $request->year_id,
+                'school_id' => auth()->user()->school_id,
+            ]);
+
+            return redirect()->route('students.index')->with('success', 'L\'élève a été ajouté avec succès.');
         } catch (\Exception $e) {
-            Log::error("Erreur lors de l'ajout d'un étudiant : " . $e->getMessage());
-            abort(404);
+            return redirect()->back()->with('error', 'Erreur lors de l\'ajout de l\'élève. Veuillez réessayer.');
         }
     }
-
     // Met à jour les informations d'un étudiant
     public function update(Request $request, Student $student){
         $request->validate([
@@ -81,7 +88,7 @@ class StudentController extends Controller
             'surname' => 'required|string|max:100',
             'sex' => 'required|string|max:10',
             'birthday' => 'required|date',
-            'birth_place' => 'required|string|max:100',
+            'birthplace' => 'required|string|max:100',
             'classroom_id' => 'required|exists:classrooms,id',
         ]);
 
@@ -92,7 +99,7 @@ class StudentController extends Controller
                 'surname' => $request->surname,
                 'sex' => $request->sex,
                 'birthday' => $request->birthday,
-                'birth_place' => $request->birth_place,
+                'birthplace' => $request->birthplace,
                 'classroom_id' => $request->classroom_id,
             ]);
 
@@ -107,7 +114,8 @@ class StudentController extends Controller
     public function edit(Student $student){
         try {
             $classrooms = Classroom::all();
-            return view('dashboard.students.edit', compact('student', 'classrooms'));
+            $years = Year::all();
+            return view('dashboard.students.edit', compact('student', 'classrooms','years'));
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'accès à la page de modification : " . $e->getMessage());
             abort(404);
@@ -156,6 +164,5 @@ class StudentController extends Controller
             abort(404);
         }
     }
-
 
 }

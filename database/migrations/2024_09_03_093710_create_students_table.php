@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('matricule');
             $table->string('name');
             $table->string('surname');
-            $table->string('sex');
+            $table->enum('sex', ['M', 'F']);
             $table->date('birthday');
             $table->string('birthplace');
             $table->unsignedBigInteger('school_id')->nullable();

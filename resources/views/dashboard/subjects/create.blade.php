@@ -21,7 +21,7 @@
                                 <label for="subject" class="font-medium fs-16 text-black form-label ">Matière
                                 </label>
                                 <input type="text" name="subject" id="subject" class="form-control bg-form " placeholder="">
-                         </div>
+                        </div>
 
                             <div class="row d-flex justify-content-center mt-2">
 
