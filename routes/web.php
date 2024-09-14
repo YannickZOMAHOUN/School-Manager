@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\Route;
 |
 */
 Auth::routes();
-//Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-    Route::resource('school', \App\Http\Controllers\SchoolController::class);
+Route::get('/', function () {return redirect('login');});
+Route::resource('school', \App\Http\Controllers\SchoolController::class);
 Route::group(['middleware' => 'auth'], function (){
-
         Route::resource('dashboard', \App\Http\Controllers\HomeController::class);
         Route::resource('classroom', \App\Http\Controllers\ClassroomController::class);
         Route::resource('student', \App\Http\Controllers\StudentController::class);
@@ -26,7 +25,6 @@ Route::group(['middleware' => 'auth'], function (){
         Route::resource('ratio', \App\Http\Controllers\RatioController::class);
         Route::get('/file-import',[\App\Http\Controllers\StudentController::class,'importView'])->name('import_view');
         Route::post('/import',[\App\Http\Controllers\StudentController::class,'import'])->name('import');
-        // web.php
         Route::get('/get-students', [\App\Http\Controllers\NoteController::class, 'getStudents'])->name('get.students');
         Route::get('/get-ratio', [\App\Http\Controllers\NoteController::class, 'getRatio'])->name('get.ratio');
         Route::get('/get-student-notes', [\App\Http\Controllers\NoteController::class, 'getStudentNotes'])->name('get.student.notes');

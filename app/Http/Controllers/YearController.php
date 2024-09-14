@@ -21,6 +21,7 @@ class YearController extends Controller
         try {
                 year::query()->create([
                 'year'=>$request->year,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return redirect()->back();
         }catch (\Exception $e){
@@ -33,6 +34,7 @@ class YearController extends Controller
         try {
             $year->update([
                 'year' => $request->year,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return  redirect()->route('dashboard.years.create');
             }catch (\Exception $e){

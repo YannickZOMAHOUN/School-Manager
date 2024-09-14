@@ -47,6 +47,6 @@ class User extends Authenticatable
         return $this->belongsTo(School::class);
     }
     public function staff(){
-        return $this->hasmany(Staff::class);
+        return $this->hasOne(Staff::class);
     }
 }

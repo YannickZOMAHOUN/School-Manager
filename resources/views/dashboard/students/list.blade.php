@@ -22,22 +22,23 @@
                 aria-label="Sélectionnez une classe">
                 <option selected disabled class="text-secondary">Choisissez la classe</option>
                 @foreach ($classrooms as $classroom)
-                    <option value="{{ $classroom->id }}">{{$classroom->classroom}}</option>
+                    <option value="{{ $classroom->id }}">{{ $classroom->classroom }}</option>
                 @endforeach
             </select>
         </div>
-         <div class="col-12 col-md-6 mb-3">
-                        <label for="year" class="font-medium form-label fs-16 text-label">
-                            Année Scolaire
-                        </label>
-                        <select class="form-select bg-form" name="year" id="year" aria-label="Sélectionnez l'année scolaire">
-                            <option selected disabled class="text-secondary">Choisissez l'année scolaire</option>
-                            @foreach ($years as $year)
-                                <option value="{{ $year->id }}">{{$year->year}}</option>
-                            @endforeach
-                        </select>
-                    </div>
+        <div class="col-12 col-md-6 mb-3">
+            <label for="year" class="font-medium form-label fs-16 text-label">
+                Année Scolaire
+            </label>
+            <select class="form-select bg-form" name="year" id="year" aria-label="Sélectionnez l'année scolaire">
+                <option selected disabled class="text-secondary">Choisissez l'année scolaire</option>
+                @foreach ($years as $year)
+                    <option value="{{ $year->id }}">{{ $year->year }}</option>
+                @endforeach
+            </select>
+        </div>
     </div>
+    <input type="hidden" id="school_id" value="{{ $school_id }}"> <!-- Champ caché pour school_id -->
 </form>
 
 <div class="card p-3">
@@ -65,25 +66,25 @@
 
 <!-- Modal de suppression générique -->
 <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
-  <div class="modal-dialog">
-    <form id="deleteForm" method="POST">
-      @csrf
-      @method('DELETE')
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
-        </div>
-        <div class="modal-body">
-          Êtes-vous sûr de vouloir supprimer cet élève ?
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-          <button type="submit" class="btn btn-danger">Supprimer</button>
-        </div>
-      </div>
-    </form>
-  </div>
+    <div class="modal-dialog">
+        <form id="deleteForm" method="POST">
+            @csrf
+            @method('DELETE')
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="deleteModalLabel">Confirmer la suppression</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <div class="modal-body">
+                    Êtes-vous sûr de vouloir supprimer cet élève ?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </div>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- Inclure jQuery et Bootstrap JS si ce n'est pas déjà fait dans ton layout -->
@@ -97,30 +98,28 @@
         $('#classroom, #year').change(function () {
             let yearId = $('#year').val();
             let classroomId = $('#classroom').val();
+            let schoolId = $('#school_id').val();  // Récupérer school_id
 
-            if (yearId && classroomId) {
+            if (yearId && classroomId && schoolId) {
                 $.ajax({
                     url: '{{ route("get.student.lists") }}',
                     type: 'GET',
                     data: {
                         year_id: yearId,
-                        classroom_id: classroomId
+                        classroom_id: classroomId,
+                        school_id: schoolId  // Inclure school_id dans la requête
                     },
                     success: function (data) {
                         let studentsHtml = '';
                         if (data.students.length) {
                             data.students.forEach(function (student) {
-                                // Option 1: Si la date est formatée côté serveur
-                                // let formattedBirthday = student.birthday;
-
-                                // Option 2: Formatage côté client
                                 let formattedBirthday = formatDate(student.birthday);
 
                                 let showUrl = '{{ route("note.show", [":id"]) }}';
-showUrl = showUrl.replace(':id', student.id) + `?year=${yearId}&classroom=${classroomId}`;
+                                showUrl = showUrl.replace(':id', student.id) + `?year=${yearId}&classroom=${classroomId}`;
 
-                                let editUrl = '{{ route("student.edit", ":id") }}';editUrl = editUrl.replace(':id', student.id);
-  // Pour la suppression, on utilise un modal générique
+                                let editUrl = '{{ route("student.edit", ":id") }}';
+                                editUrl = editUrl.replace(':id', student.id);
 
                                 studentsHtml += `
                                     <tr>
@@ -150,9 +149,9 @@ showUrl = showUrl.replace(':id', student.id) + `?year=${yearId}&classroom=${clas
                         }
 
                         // Initialiser les tooltips
-                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+                        var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                         var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-                          return new bootstrap.Tooltip(tooltipTriggerEl)
+                          return new bootstrap.Tooltip(tooltipTriggerEl);
                         });
                     },
                     error: function () {
@@ -178,7 +177,6 @@ showUrl = showUrl.replace(':id', student.id) + `?year=${yearId}&classroom=${clas
             $('#deleteForm').attr('action', deleteUrl);
             $('#deleteModal').modal('show');
         });
-
     });
 </script>
 @endsection

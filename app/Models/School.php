@@ -9,8 +9,7 @@ class School extends Model
 {
     use HasFactory;
     protected $fillable=[
-        'cod_school',
-        'school_name'
+        'school',
 
     ];
 

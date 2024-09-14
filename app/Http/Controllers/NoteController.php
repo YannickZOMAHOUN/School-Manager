@@ -75,6 +75,7 @@ class NoteController extends Controller
                 [
                     'recording_id' => $recording->id,
                     'subject_id' => $request->subject,
+                    'school_id'=>auth()->user()->school->id,
                     'semester' => $request->semester,
                 ],
                 [

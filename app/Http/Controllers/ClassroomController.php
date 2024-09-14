@@ -22,6 +22,7 @@ class ClassroomController extends Controller
         try {
                 Classroom::query()->create([
                 'classroom'=>$request->classroom,
+                'school'=>auth()->user()->school->id,
             ]);
             return redirect()->back();
         }catch (\Exception $e){
@@ -34,6 +35,7 @@ class ClassroomController extends Controller
         try {
             $classroom->update([
                 'classroom' => $request->classroom,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return  redirect()->route('classroom.create');
             }catch (\Exception $e){

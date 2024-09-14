@@ -27,6 +27,7 @@ class RatioController extends Controller
                 'ratio'=>$request->ratio,
                 'classroom_id'=>$request->classroom,
                 'subject_id'=>$request->subject,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return redirect()->back();
         }catch (\Exception $e){
@@ -41,6 +42,7 @@ class RatioController extends Controller
                 'ratio'=>$request->ratio,
                 'classroom_id'=>$request->classroom,
                 'subject_id'=>$request->subject,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return  redirect()->route('ratio.create');
             }catch (\Exception $e){

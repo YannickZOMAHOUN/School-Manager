@@ -12,7 +12,6 @@ class Staff extends Model
         'name',
         'surname',
         'sex',
-        'address',
         'number',
         'user_id',
         'school_id',
@@ -26,5 +25,8 @@ class Staff extends Model
     public function role(){
         return $this->belongsTo(Role::class);
     }
-    
+    public function user(){
+        return $this->belongsTo(User::class);
+    }
+
 }

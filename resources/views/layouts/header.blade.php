@@ -20,11 +20,11 @@
           <li class="nav-item dropdown pe-3">
             <a class="nav-link nav-profile d-flex align-items-center pe-0" href="#" data-bs-toggle="dropdown" id="dropdownMenuLink">
               <span class="pe-1 pe-lg-0"><i class="fas fa-user text-color-avt"></i></span>
-              <span class="d-none d-md-block dropdown-toggle ps-2 text-color-avt font-light">{{ auth()->user()->surname.' '.auth()->user()->name }}</span>
+              <span class="d-none d-md-block dropdown-toggle ps-2 text-color-avt font-light">{{ auth()->user()->staff->surname.' '.auth()->user()->staff->name }}</span>
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile" aria-labelledby="dropdownMenuLink">
               <li class="dropdown-header">
-                <h6>{{ auth()->user()->surname.' '.auth()->user()->name }}</h6>
+                <h6>{{ auth()->user()->staff->surname.' '.auth()->user()->staff->name }}</h6>
               </li>
               <li>
                 <hr class="dropdown-divider">
@@ -39,12 +39,10 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <a class="dropdown-item d-flex align-items-center" href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-                  <i class="fas fa-sign-out-alt"></i>&nbsp; Déconnexion
-                </a>
-                <form id="logout-form" action="{{ route('logout') }}" method="POST">
+                <a class="dropdown-item d-flex align-items-center " href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();"><i class="fas fa-sign-out-alt"></i>&nbsp; Déconnexion</a>
+                    <form id="logout-form" action="{{ route('logout') }}" method="POST" >
                   {{ csrf_field() }}
-                </form>
+                     </form>
               </li>
             </ul><!-- End Profile Dropdown Items -->
           </li><!-- End Profile Nav -->

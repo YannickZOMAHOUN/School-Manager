@@ -16,8 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('surname');
             $table->enum('sex', ['M', 'F']);
-            $table->string('email');
-            $table->float('number');
+            $table->string('number');
             $table->unsignedBigInteger('school_id')->nullable();
             $table->unsignedBigInteger('role_id');
             $table->unsignedBigInteger('user_id');
@@ -25,6 +24,8 @@ return new class extends Migration
             $table->foreign('role_id')->references('id')->on('roles')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
+
+
         });
     }
 

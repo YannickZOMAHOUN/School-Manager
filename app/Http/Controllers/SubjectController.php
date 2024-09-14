@@ -21,6 +21,7 @@ class SubjectController extends Controller
         try {
                 Subject::query()->create([
                 'subject'=>$request->subject,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return redirect()->back();
         }catch (\Exception $e){
@@ -33,6 +34,7 @@ class SubjectController extends Controller
         try {
             $subject->update([
                 'subject' => $request->subject,
+                'school_id'=>auth()->user()->school->id,
             ]);
             return  redirect()->route('dashboard.subjects.create');
             }catch (\Exception $e){

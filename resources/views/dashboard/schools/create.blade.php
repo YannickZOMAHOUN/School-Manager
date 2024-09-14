@@ -6,12 +6,13 @@
 
     <div class="mb-3">
         <label for="school" class="form-label font-medium text-color-avt">Nom de l'établissement</label>
-        <input type="text" class="form-control rounded-pill py-2" name="school">
-
-
+        <input type="text" class="form-control rounded-pill py-2" name="school" value="{{ old('school') }}" required>
+        @if($errors->has('school'))
+            <span class="text-danger">{{ $errors->first('school') }}</span>
+        @endif
     </div>
     <div class="py-2 mb-3">
-        <button type="submit" class="btn btn-avt-2 d-block w-100 py-2 rounded-pill"> {{ __('Créer l`\école') }} </button>
+        <button type="submit" class="btn btn-avt-2 d-block w-100 py-2 rounded-pill"> {{ __('Créer l`école') }} </button>
     </div>
 </form>
 @endsection

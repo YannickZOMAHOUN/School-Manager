@@ -11,11 +11,13 @@ class StudentsImport implements ToModel
 {
     protected $classroom_id;
     protected $year_id;
+    protected $school_id;
 
     public function __construct($classroom_id, $year_id)
     {
         $this->classroom_id = $classroom_id;
         $this->year_id = $year_id;
+        $this->school_id = auth()->user()->school->id;
     }
 
     /**
@@ -34,6 +36,7 @@ class StudentsImport implements ToModel
             'sex' => $row[3],
             'birthday' => $birthday,
             'birthplace' => $row[5],
+            'school_id' => $this->school_id,
         ]);
 
         Recording::query()->create([
