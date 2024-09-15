@@ -12,6 +12,8 @@ class Note extends Model
         'note',
         'recording_id',
         'ratio_id',
+        'semester',
+        'ratio_id',
         'subject_id',
         'school_id',
     ];

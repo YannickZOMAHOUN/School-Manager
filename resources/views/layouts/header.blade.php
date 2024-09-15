@@ -30,7 +30,7 @@
                 <hr class="dropdown-divider">
               </li>
               <li>
-                <a class="dropdown-item d-flex align-items-center" style="cursor: pointer" href="#">
+                <a class="dropdown-item d-flex align-items-center" style="cursor: pointer" href="{{ route('staff.create') }}">
                   <i class="fas fa-user"></i>
                   <span>&nbsp; Mon Profil</span>
                 </a>

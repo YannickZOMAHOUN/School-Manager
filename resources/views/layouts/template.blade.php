@@ -60,7 +60,7 @@
 
     <footer id="footer" class="footer">
         <div class="copyright">
-            &copy; 2023 Copyright <strong><span>{{auth()->user()->school->school }}</span></strong> powered by <strong><span class="fw-bold">By Yann Solutions</span></strong>
+            &copy;{{date('Y') }} {{auth()->user()->school->school }}</span></strong> powered by <strong><span class="fw-bold">By Yann Solutions</span></strong>
         </div>
     </footer>
 

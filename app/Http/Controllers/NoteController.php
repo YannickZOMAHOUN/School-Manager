@@ -13,20 +13,34 @@ use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
 {
-    public function getStudents(Request $request) {
-        $students = Recording::where('year_id', $request->year_id)
-                             ->where('classroom_id', $request->classroom_id)
-                             ->with('student') // Assuming 'student' is the relation on 'Recording'
-                             ->get()->pluck('student');
-        return response()->json($students);
-    }
+  public function getStudents(Request $request) {
+    $students = Recording::where('year_id', $request->year_id)
+                         ->where('classroom_id', $request->classroom_id)
+                         ->where('school_id', auth()->user()->school_id) // Ajouter un filtre pour l'école
+                         ->with('student') // Relation avec le modèle 'Student'
+                         ->get()->pluck('student');
+    return response()->json($students);
+}
 
-    public function getRatio(Request $request) {
-        $ratio = Ratio::where('subject_id', $request->subject_id)
-                      ->where('classroom_id', $request->classroom_id)
-                      ->first();
-        return response()->json(['ratio' => $ratio ? $ratio->ratio : null]);
+
+public function getRatio(Request $request) {
+    $ratio = Ratio::where('subject_id', $request->subject_id)
+                  ->where('classroom_id', $request->classroom_id)
+                  ->first();
+
+    if ($ratio) {
+        return response()->json([
+            'ratio' => $ratio->ratio,
+            'ratio_id' => $ratio->id // Assurez-vous que 'id' est bien la clé primaire du ratio
+        ]);
+    } else {
+        return response()->json([
+            'ratio' => null,
+            'ratio_id' => null
+        ]);
     }
+}
+
 
     public function create(){
         try {
@@ -48,13 +62,31 @@ class NoteController extends Controller
             'classroom' => 'required|exists:classrooms,id',
             'student' => 'required|exists:students,id',
             'subject' => 'required|exists:subjects,id',
-            'ratio' => 'required|numeric',
+            'ratio_id' => 'required|exists:ratios,id',  // Vérifie si le ratio_id existe dans la table ratios
             'semester' => 'required|in:1,2',
             'note' => 'required|numeric',
         ]);
 
         try {
-            // Création ou récupération de l'enregistrement
+            // Vérifier si une note existe déjà pour cet élève, matière, semestre, et école
+            $existingNote = Note::whereHas('recording', function($query) use ($request) {
+                $query->where('student_id', $request->student)
+                      ->where('year_id', $request->year)
+                      ->where('classroom_id', $request->classroom)
+                      ->where('school_id', auth()->user()->school->id);
+            })
+            ->where('subject_id', $request->subject)
+            ->where('semester', $request->semester)
+            ->first();
+
+            if ($existingNote) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Cet élève a déjà une note pour cette matière ce semestre.',
+                ], 422);
+            }
+
+            // Récupération de l'enregistrement (recording)
             $recording = Recording::where([
                 ['student_id', $request->student],
                 ['year_id', $request->year],
@@ -70,19 +102,15 @@ class NoteController extends Controller
                 return response()->json(['success' => false, 'message' => 'Enregistrement non trouvé.'], 404);
             }
 
-            // Création ou mise à jour de la note
-            $note = Note::updateOrCreate(
-                [
-                    'recording_id' => $recording->id,
-                    'subject_id' => $request->subject,
-                    'school_id'=>auth()->user()->school->id,
-                    'semester' => $request->semester,
-                ],
-                [
-                    'note' => $request->note,
-                    'ratio_id' => $request->ratio,
-                ]
-            );
+            // Création de la nouvelle note
+            $note = Note::create([
+                'recording_id' => $recording->id,
+                'subject_id' => $request->subject,
+                'school_id' => auth()->user()->school->id,
+                'semester' => $request->semester,
+                'note' => $request->note,
+                'ratio_id' => $request->ratio_id,  // Enregistrer le ratio_id
+            ]);
 
             Log::info('Note enregistrée avec succès', [
                 'note_id' => $note->id,
@@ -90,7 +118,7 @@ class NoteController extends Controller
                 'subject_id' => $request->subject,
                 'semester' => $request->semester,
                 'note' => $request->note,
-                'ratio' => $request->ratio,
+                'ratio_id' => $request->ratio_id,
             ]);
 
             // Réponse de succès
@@ -104,16 +132,10 @@ class NoteController extends Controller
             return response()->json(['success' => false, 'message' => 'Une erreur est survenue lors de l\'enregistrement.'], 500);
         }
     }
-    /*public function show(){
-        try {
-            $years = Year::all();
-            $classrooms = Classroom::all();
-                    return view('dashboard.notes.show',compact(['classrooms','years']));
-        }catch (\Exception $e){
-            Log::info($e->getMessage());
-            abort(404);
-        }
-    }*/
+
+
+
+
     public function getStudentNotes(Request $request)
     {
         $request->validate([
@@ -147,6 +169,7 @@ class NoteController extends Controller
                     $totalMoyenneCoefficiee += $moyenneCoefficiee;
 
                     return [
+                        'id' => $note->id,
                         'subject' => $note->subject->subject,
                         'note' => $note->note,
                         'coefficient' => $coefficient,
@@ -273,6 +296,29 @@ class NoteController extends Controller
     return view('dashboard.notes.show', compact('recording', 'years', 'classrooms'));
 }
 
+public function edit(Note $note)
+{
+    try {
+        $classrooms = Classroom::all();
+        $years = Year::all();
+        $students = Student::all();
+        return view('dashboard.notes.edit', compact('students', 'classrooms', 'years', 'note'));
+    } catch (\Exception $e) {
+        Log::error("Erreur lors de l'accès à la page de modification : " . $e->getMessage());
+        abort(404, 'Page non trouvée');
+    }
+}
 
 
+// Supprime une note
+public function destroy(Note $note)
+{
+    try {
+        $note->delete();
+        return redirect()->back()->with('success', 'Note supprimée avec succès!');
+    } catch (\Exception $e) {
+        Log::error("Erreur lors de la suppression de la note : " . $e->getMessage());
+        abort(500, 'Erreur lors de la suppression');
+    }
+}
 }

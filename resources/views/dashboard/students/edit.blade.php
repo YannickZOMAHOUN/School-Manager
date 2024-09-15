@@ -9,8 +9,7 @@
     <div class="card py-5">
         <form action="{{ route('student.update', $student->id) }}" method="POST" enctype="multipart/form-data">
             @csrf
-            @method('PATCH') <!-- Utilisation de la méthode PATCH pour l'édition -->
-
+            @method('PATCH')
             <div class="row">
                 <div class="col-12 col-md-6 mb-3">
                     <label for="classroom">Classe:</label>

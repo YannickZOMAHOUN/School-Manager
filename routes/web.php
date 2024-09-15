@@ -23,6 +23,7 @@ Route::group(['middleware' => 'auth'], function (){
         Route::resource('year', \App\Http\Controllers\YearController::class);
         Route::resource('subject', \App\Http\Controllers\SubjectController::class);
         Route::resource('ratio', \App\Http\Controllers\RatioController::class);
+        Route::resource('staff', \App\Http\Controllers\StaffController::class);
         Route::get('/file-import',[\App\Http\Controllers\StudentController::class,'importView'])->name('import_view');
         Route::post('/import',[\App\Http\Controllers\StudentController::class,'import'])->name('import');
         Route::get('/get-students', [\App\Http\Controllers\NoteController::class, 'getStudents'])->name('get.students');

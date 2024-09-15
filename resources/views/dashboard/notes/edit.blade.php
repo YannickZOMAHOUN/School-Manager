@@ -103,68 +103,7 @@
                     }
                 });
             }
-        });
-
-        // Charger le coefficient et le ratio_id automatiquement
-        $('#subject').change(function () {
-            let subjectId = $(this).val();
-            let classroomId = $('#classroom').val();
-            if (subjectId && classroomId) {
-                $.ajax({
-                    url: '{{ route("get.ratio") }}',
-                    type: 'GET',
-                    data: {subject_id: subjectId, classroom_id: classroomId},
-                    success: function (data) {
-                        console.log(data);
-                        // Remplir le champ du coefficient
-                        $('#ratio').val(data.ratio);
-                        // Remplir le champ caché du ratio_id
-                        $('#ratio_id').val(data.ratio_id);
-                        console.log(data.ratio_id);
-                    },
-                    error: function () {
-                        toastr.error('Une erreur est survenue lors du chargement du coefficient.', 'Erreur', {
-                            timeOut: 5000,
-                            progressBar: true
-                        });
-                    }
-                });
-            }
-        });
-
-        // Soumettre le formulaire avec AJAX
-        $('#note-form').submit(function (e) {
-
-            e.preventDefault(); // Empêche le rechargement de la page
-            let formData = $(this).serialize(); // Récupérer les données du formulaire
-            console.log(formData);
-            let yearId = $('#year').val();
-            let classroomId = $('#classroom').val();
-
-            $.ajax({
-                url: $(this).attr('action'),
-                method: $(this).attr('method'),
-                data: formData,
-                success: function (response) {
-                    let student = $('#student option:selected').text();
-                    let subject = $('#subject option:selected').text();
-                    let semester = $('#semester').val();
-                    toastr.success(`La note de ${student} dans la matière ${subject} pour le semestre ${semester} a bien été enregistrée !`, 'Succès', {
-                        timeOut: 5000,
-                        progressBar: true
-                    });
-                    $('#note-form')[0].reset();
-                    $('#year').val(yearId);
-                    $('#classroom').val(classroomId);
-                },
-                error: function () {
-                    toastr.error('Une erreur est survenue lors de l\'enregistrement.', 'Erreur', {
-                        timeOut: 5000,
-                        progressBar: true
-                    });
-                }
-            });
-        });
+        });   
     });
 </script>
 @endsection

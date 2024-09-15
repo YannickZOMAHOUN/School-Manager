@@ -12,21 +12,16 @@
         </li><!-- End Dashboard Nav -->
         <li class="nav-item">
             <a class="nav-link collapsed" href="{{ route('note.create') }}">
-              <i class="bi bi-person"></i>
+              <i class="bi bi-calculator-fill"></i>
               <span>Les Notes</span>
             </a>
           </li>
 
-         <!-- <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('notes.show') }}">
-              <i class="bi bi-person"></i>
-              <span>Moyenne</span>
-            </a>
-          </li>-->
+
 
         <li class="nav-item">
             <a class="nav-link collapsed " data-bs-target="#students-nav" data-bs-toggle="collapse" href="#">
-                <i class="bi bi-gear" ></i><span>&nbsp;Elèves</span><i class="bi bi-chevron-down ms-auto"></i>
+                <i class="bi bi-briefcase-fill" ></i><span>&nbsp;Elèves</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
             <ul id="students-nav"
                 class="nav-content collapse "data-bs-parent="#sidebar-nav">
@@ -39,7 +34,7 @@
                 <li>
                     <a href="{{ route('student.create') }}"
                         class="text-decoration-none">
-                        <i class="fas fa-list"></i><span>&nbsp;Nouvel Elève</span>
+                        <i class="fas fa-plus"></i><span>&nbsp;Nouvel Elève</span>
                     </a>
                 </li>
             </ul>
@@ -53,14 +48,14 @@
                 <li>
                     <a href="{{ route('classroom.create') }}"
                         class="text-decoration-none">
-                        <i class="fas fa-list"></i><span>&nbsp;Classe</span>
+                        <i class="bi bi-columns-gap"></i><span>&nbsp;Classe</span>
                     </a>
                 </li>
                     <ul id="settings-nav"class="nav-content collapse "data-bs-parent="#sidebar-nav">
                         <li>
                             <a href="{{ route('year.create') }}"
                                 class="text-decoration-none">
-                                <i class="fas fa-list"></i><span>&nbsp;Année Scolaire</span>
+                                <i class="bi bi-calendar2-day-fill"></i><span>&nbsp;Année Scolaire</span>
                             </a>
                         </li>
                             <ul id="settings-nav"class="nav-content collapse "data-bs-parent="#sidebar-nav">

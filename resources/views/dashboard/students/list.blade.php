@@ -113,6 +113,7 @@
                         let studentsHtml = '';
                         if (data.students.length) {
                             data.students.forEach(function (student) {
+                                console.log(student.id);
                                 let formattedBirthday = formatDate(student.birthday);
 
                                 let showUrl = '{{ route("note.show", [":id"]) }}';

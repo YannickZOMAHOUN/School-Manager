@@ -35,7 +35,6 @@ class ClassroomController extends Controller
         try {
             $classroom->update([
                 'classroom' => $request->classroom,
-                'school_id'=>auth()->user()->school->id,
             ]);
             return  redirect()->route('classroom.create');
             }catch (\Exception $e){
