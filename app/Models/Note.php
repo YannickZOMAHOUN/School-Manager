@@ -13,7 +13,6 @@ class Note extends Model
         'recording_id',
         'ratio_id',
         'semester',
-        'ratio_id',
         'subject_id',
         'school_id',
     ];

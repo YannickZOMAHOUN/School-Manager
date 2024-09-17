@@ -10,6 +10,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\StudentsImport;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StudentController extends Controller
 {
@@ -146,6 +147,7 @@ class StudentController extends Controller
 
     // Importe des étudiants depuis un fichier Excel ou CSV
     public function import(Request $request){
+        // Validation des champs du formulaire
         $request->validate([
             'file' => 'required|file|mimes:xls,xlsx,csv',
             'classroom_id' => 'required|exists:classrooms,id',
@@ -153,16 +155,26 @@ class StudentController extends Controller
         ]);
 
         try {
+            // Récupération des données du formulaire
             $classroom_id = $request->input('classroom_id');
             $year_id = $request->input('year_id');
 
-            Excel::import(new StudentsImport($classroom_id, $year_id), $request->file('file')->store('files'));
+            // Stockage temporaire du fichier
+            $filePath = $request->file('file')->store('files');
 
+            // Importation des données du fichier
+            Excel::import(new StudentsImport($classroom_id, $year_id), $filePath);
+
+            // Suppression du fichier après l'importation
+            Storage::delete($filePath);
+            dd($request);
+            // Redirection avec message de succès
             return redirect()->route('student.index')->with('success', 'Importation réussie!');
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'importation des étudiants : " . $e->getMessage());
-            abort(404);
+
+            // Redirection avec message d'erreur en cas d'échec
+            return redirect()->back()->withErrors("Erreur lors de l'importation des étudiants.");
         }
     }
-
 }

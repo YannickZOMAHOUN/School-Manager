@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -13,16 +12,14 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
-
 class RegisterController extends Controller
 {
     use RegistersUsers;
 
-
     public function __construct()
     {
         $this->middleware('guest');
-        }
+    }
 
     /**
      * Get a validator for an incoming registration request.
@@ -35,20 +32,20 @@ class RegisterController extends Controller
         if (!array_key_exists('school_id', $data)) {
             abort(400, 'Le champ school_id est manquant.');
         }
-        
+
         return Validator::make($data, [
             'school_id' => ['required', 'exists:schools,id'],
             'name' => ['required', 'string', 'max:255'],
             'email' => [
-            'required',
-            'string',
-            'email',
-            'max:255',
-            Rule::unique('users')->where(function ($query) use ($data) {
-                return $query->where('school_id', $data['school_id']);
-            }),
-             ],
-         'password' => ['required', 'string', 'min:8', 'confirmed'],
+                'required',
+                'string',
+                'email',
+                'max:255',
+                Rule::unique('users')->where(function ($query) use ($data) {
+                    return $query->where('school_id', $data['school_id']);
+                }),
+            ],
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
             'surname' => 'required|string|max:255',
             'role_id' => 'required|exists:roles,id',
             'number' => 'required|string',
@@ -84,19 +81,30 @@ class RegisterController extends Controller
     }
 
     /**
+     * Handle a registration request for the application.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    protected function registered(Request $request, $user)
+    {
+        return view('auth.login')->with('status', 'Inscription réussie, veuillez vous connecter.');
+    }
+
+    /**
      * Show the registration form.
      *
      * @return \Illuminate\View\View
      */
-    protected function registered(Request $request, $user)
-{
-    return view('auth.login')->with('status', 'Inscription réussie, veuillez vous connecter.');
-}
-
     public function showRegistrationForm()
     {
         $schools = School::all();
         $roles = Role::all();
-        return view('auth.register', compact('schools', 'roles'));
+
+        // Récupérer l'école depuis la session
+        $school_id = session('school_id');
+        $school_name = session('school_name');
+
+        return view('auth.register', compact('schools', 'roles', 'school_id', 'school_name'));
     }
 }

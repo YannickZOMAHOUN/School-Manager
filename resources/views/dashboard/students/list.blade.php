@@ -87,10 +87,9 @@
     </div>
 </div>
 
-<!-- Inclure jQuery et Bootstrap JS si ce n'est pas déjà fait dans ton layout -->
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
 <!-- Bootstrap JS (v5) -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 
 <script type="text/javascript">
     $(document).ready(function () {
@@ -130,7 +129,7 @@
                                         <td>${student.sex}</td>
                                         <td>${formattedBirthday}</td>
                                         <td>${student.birthplace}</td>
-                                        <td class="text-center" style="cursor: pointer">
+                                       <td class="text-center" style="cursor: pointer">
                                             <a class="text-decoration-none text-secondary" data-bs-toggle="tooltip" data-bs-placement="top"
                                                 title="Moyenne de l'élève" href="${showUrl}"> <i class="fas fa-eye"></i> </a>
                                             &nbsp;

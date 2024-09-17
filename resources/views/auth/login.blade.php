@@ -31,12 +31,6 @@
 </form>
 
 <div class="text-center">
-    <a href="{{ route('register') }}" class="text-color-avt">
-        {{ __('Créer un nouveau compte') }}
-    </a>
-
-    <span class="mx-2">|</span>
-
     <a href="{{ route('school.create') }}" class="text-color-avt">
         {{ __('Créer une école') }}
     </a>

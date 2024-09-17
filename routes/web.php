@@ -32,4 +32,6 @@ Route::group(['middleware' => 'auth'], function (){
         Route::get('/get-class-students', [\App\Http\Controllers\NoteController::class, 'getClassStudents'])->name('get.class.students');
         Route::get('/notes', [\App\Http\Controllers\NoteController::class, 'show'])->name('notes.show');
         Route::get('/students/lists', [\App\Http\Controllers\StudentController::class, 'getStudentLists'])->name('get.student.lists');
+        Route::post('/notes/get', [\App\Http\Controllers\NoteController::class, 'getNotes'])->name('get.notes');
+
 });

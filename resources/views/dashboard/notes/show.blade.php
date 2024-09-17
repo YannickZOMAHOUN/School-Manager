@@ -44,8 +44,8 @@
             <thead>
                 <tr>
                     <th>Matière</th>
-                    <th>Note</th>
                     <th>Coefficient</th>
+                    <th>Note</th>
                     <th>Moyenne Coefficientée</th>
                     <th>Appréciation</th>
                     <th>Actions</th>
@@ -100,7 +100,8 @@
         </div>
     </div>
 
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+    <script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
 <script type="text/javascript">
    $(document).ready(function () {
 
@@ -166,8 +167,8 @@
                             notesHtml += `
                                 <tr>
                                     <td>${note.subject}</td>
+                                     <td>${note.coefficient}</td>
                                     <td>${note.note}</td>
-                                    <td>${note.coefficient}</td>
                                     <td>${note.moyenne_coefficiee}</td>
                                     <td>${appreciation}</td>
                                     <td>
