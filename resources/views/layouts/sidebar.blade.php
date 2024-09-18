@@ -10,15 +10,26 @@
                 <span>&nbsp; Accueil</span>
             </a>
         </li><!-- End Dashboard Nav -->
-        <li class="nav-item">
-            <a class="nav-link collapsed" href="{{ route('note.create') }}">
-              <i class="bi bi-calculator-fill"></i>
-              <span>Les Notes</span>
+          <li class="nav-item">
+            <a class="nav-link collapsed " data-bs-target="#notes-nav" data-bs-toggle="collapse" href="#">
+                <i class="bi bi-calculator-fill" ></i><span>&nbsp;Les Notes</span><i class="bi bi-chevron-down ms-auto"></i>
             </a>
-          </li>
-
-
-
+            <ul id="notes-nav"
+                class="nav-content collapse "data-bs-parent="#sidebar-nav">
+                <li>
+                    <a href="{{ route('note.index') }}"
+                        class="text-decoration-none">
+                        <i class="fas fa-list"></i><span>&nbsp;Bulletins</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('note.create') }}"
+                        class="text-decoration-none">
+                        <i class="fas fa-plus"></i><span>&nbsp;Nouvelle Note</span>
+                    </a>
+                </li>
+            </ul>
+        </li>
         <li class="nav-item">
             <a class="nav-link collapsed " data-bs-target="#students-nav" data-bs-toggle="collapse" href="#">
                 <i class="bi bi-briefcase-fill" ></i><span>&nbsp;Elèves</span><i class="bi bi-chevron-down ms-auto"></i>

@@ -7,7 +7,7 @@
 @section('content')
 <div class="row col-12 pb-5">
     <div class="my-3">
-        <h4 class="font-medium text-color-avt">Ajouter les notes</h4>
+        <h4 class="font-medium text-color-avt">Modifier une note</h4>
     </div>
     <div class="card py-5">
         <form id="note-form" action="{{ route('note.store') }}" method="POST">
