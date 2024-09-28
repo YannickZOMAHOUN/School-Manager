@@ -19,13 +19,19 @@
                 <li>
                     <a href="{{ route('note.index') }}"
                         class="text-decoration-none">
-                        <i class="fas fa-list"></i><span>&nbsp;Bulletins</span>
+                        <i class="fas fa-list"></i><span>&nbsp;Voir les notes</span>
                     </a>
                 </li>
                 <li>
                     <a href="{{ route('note.create') }}"
                         class="text-decoration-none">
                         <i class="fas fa-plus"></i><span>&nbsp;Nouvelle Note</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="{{ route('get.cards') }}"
+                        class="text-decoration-none">
+                        <i class="fas fa-list"></i><span>&nbsp;Bulletins</span>
                     </a>
                 </li>
             </ul>

@@ -1,120 +1,153 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulletin(s)</title>
     <style>
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 12px;
-            margin: 20px;
-            color: #333;
-            background-color: #f9f9f9;
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f4f4f4;
         }
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
+
+        .progress-card {
+            width: 600px;
+            background-color: #fff;
             padding: 20px;
-            background: #fff;
-            border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
         }
-        table {
+
+        h1 {
+            background-color: #2C3E50;
+            color: #fff;
+            padding: 10px 0;
+            margin: 0;
+        }
+
+        .header-info {
+            margin: 20px 0;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-gap: 10px;
+        }
+
+        .grades-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin: 20px 0;
         }
-        th, td {
+
+        .grades-table th, .grades-table td {
             border: 1px solid #ddd;
-            padding: 12px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .grades-table th {
+            background-color: #2C3E50;
+            color: white;
+        }
+
+        .attendance {
+            margin: 20px 0;
             text-align: left;
         }
-        th {
-            background-color: #f4f4f4;
-            color: #333;
-        }
-        td {
-            background-color: #fff;
-        }
-        h2 {
-            color: #0056b3;
-            font-size: 20px;
-            margin-top: 0;
-        }
-        p {
-            margin: 8px 0;
+
+        footer {
+            margin-top: 30px;
+            font-size: 12px;
             color: #555;
+            text-align: center;
         }
-        .total, .average {
-            font-weight: bold;
-            color: #333;
+
+        footer div {
+            margin-bottom: 5px;
         }
-        hr {
-            margin: 20px 0;
-            border: 0;
-            border-top: 1px solid #ddd;
-        }
+
         .page-break {
             page-break-after: always;
         }
-        .header {
-            text-align: center;
-            margin-bottom: 20px;
+
+        @media print {
+            .progress-card {
+                box-shadow: none;
+                width: 100%;
+            }
+
+            footer {
+                display: none;
+            }
+
+            .grades-table th, .grades-table td {
+                border: 1px solid black;
+            }
         }
-        .header img {
-            width: 100px;
-            height: auto;
-        }
-        .header h1 {
-            font-size: 24px;
-            margin: 0;
+
+        @media (max-width: 768px) {
+            .progress-card {
+                width: 90%;
+            }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
     @foreach ($bulletins as $bulletin)
-    <div class="header">
-        <h1>Bulletin de Notes</h1>
-    </div>
-        <div class="page-break">
-            <h2>Bulletin de {{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</h2>
-            <p><strong>Année scolaire:</strong> {{ $year }}</p>
-            <p><strong>Classe:</strong> {{ $classroom }}</p>
-            <p><strong>Semestre:</strong> {{ $semester }}</p>
-
-            <table>
-                <thead>
-                    <tr>
-                        <th>Matière</th>
-                        <th>Coefficient</th>
-                        <th>Moyenne</th>
-                        <th>Moyenne Coefficiée</th>
-                        <th>Appréciation</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($bulletin['notes'] as $note)
-                        <tr>
-                            <td>{{ $note['subject'] }}</td>
-                            <td>{{ $note['coefficient'] }}</td>
-                            <td>{{ $note['note'] }}</td>
-                            <td>{{ $note['moyenne_coefficiee'] }}</td>
-                            <td>{{ $note['appreciation'] }}</td>
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
-
-            <p class="total"><strong>Total Moyenne Coefficiée:</strong> {{ $bulletin['total_moyenne_coefficiee'] }}</p>
-            <p class="average"><strong>Moyenne Générale:</strong> {{ $bulletin['moyenne_generale'] }}</p>
-
-            <hr>
+    <div class="progress-card">
+        <h1>{{ auth()->user()->school->school}}</h1>
+        <div class="header-info">
+            <div>Nom : {{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</div>
+            <div>Année scolaire : {{ $year }}</div>
+            <div>Classe : {{ $classroom }}</div>
+            <div>Semestre : {{ $semester }}</div>
+            <div>Matricule : {{ $bulletin['student']['matricule'] }}</div>
+            <div>Date et lieu de naissance : {{ \Carbon\Carbon::parse($bulletin['student']['birthday'])->format('d/m/Y') }} à {{ $bulletin['student']['birthplace'] }}</div>
         </div>
+
+        <table class="grades-table">
+            <thead>
+                <tr>
+                    <th>Matière</th>
+                    <th>Coefficient</th>
+                    <th>Moyenne</th>
+                    <th>Moyenne Coefficientée</th>
+                    <th>Appréciation</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach ($bulletin['notes'] as $note)
+                <tr>
+                    <td>{{ $note['subject'] }}</td>
+                    <td>{{ $note['coefficient'] }}</td>
+                    <td>{{ $note['note'] }}</td>
+                    <td>{{ $note['moyenne_coefficiee'] }}</td>
+                    <td>{{ $note['appreciation'] }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+
+        <div class="attendance">
+            <h3>Récapitulatif</h3>
+            <div>Total des moyennes coefficientées : {{ $bulletin['total_moyenne_coefficiee'] }}</div>
+            <div>Moyenne générale : {{ $bulletin['moyenne_generale'] }}</div>
+        </div>
+
+        <footer>
+            <div>Votre Logo</div>
+            <div>Contact : 123 Rue Christopher, Email : info@votresite.com, Téléphone : 123-456-7890</div>
+        </footer>
+    </div>
+
+    <div class="page-break"></div>
     @endforeach
-</div>
 
 </body>
 </html>

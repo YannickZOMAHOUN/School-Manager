@@ -60,7 +60,7 @@
 
     <footer id="footer" class="footer">
         <div class="copyright">
-            &copy;{{date('Y') }} {{auth()->user()->school->school }}</span></strong> powered by <strong><span class="fw-bold">By Yann Solutions</span></strong>
+            &copy;{{date('Y') }} <strong>{{auth()->user()->school->school }}</strong></span></strong> powered by <strong><span class="fw-bold"> Zym SOLUTIONS</span></strong>
         </div>
     </footer>
 

@@ -35,11 +35,22 @@ class NoteController extends Controller
         return view('dashboard.notes.show', compact('recording', 'years', 'classrooms'));
     }
 
+    public function getcards() {
+        try {
+            $classrooms = Classroom::all();
+            $years = Year::all();
+            return view('dashboard.notes.card', compact([ 'classrooms', 'years']));
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
     public function index() {
         try {
             $classrooms = Classroom::all();
             $years = Year::all();
-            return view('dashboard.notes.list', compact([ 'classrooms', 'years']));
+            $subjects = Subject::all();
+            return view('dashboard.notes.list', compact([ 'classrooms', 'years','subjects']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             abort(404);
@@ -84,7 +95,32 @@ class NoteController extends Controller
             abort(404);
         }
     }
-
+    public function edit(Note $note) {
+        try {
+            $subjects = Subject::all();
+            $classrooms = Classroom::all();
+            $years = Year::all();
+            $students = Student::all();
+            return view('dashboard.notes.edit', compact(['subjects', 'classrooms', 'students', 'years','note']));
+        } catch (\Exception $e) {
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
+    public function update(Request $request,Note $note){
+        try {
+            $note->update([
+                'note'=>$request->note,
+                'classroom_id'=>$request->classroom,
+                'subject_id'=>$request->subject,
+                'school_id'=>auth()->user()->school->id,
+            ]);
+            return  redirect()->route('note.show');
+            }catch (\Exception $e){
+            Log::info($e->getMessage());
+            abort(404);
+        }
+    }
     public function store(Request $request) {
         // Validation des données
         $validated = $request->validate([
@@ -154,8 +190,7 @@ class NoteController extends Controller
         }
     }
 
-    public function getStudentNotes(Request $request)
-    {
+    public function getStudentNotes(Request $request) {
         $request->validate([
             'student_id' => 'required|exists:students,id',
             'year_id' => 'required|exists:years,id',
@@ -170,7 +205,7 @@ class NoteController extends Controller
                 ->first();
 
             if ($recording) {
-                // Calculer les notes et moyennes pour le semestre courant
+                // Récupérer les notes pour l'élève et le semestre spécifiés
                 $notes = Note::where('recording_id', $recording->id)
                     ->where('semester', $request->semester)
                     ->with('subject', 'ratio')
@@ -191,7 +226,8 @@ class NoteController extends Controller
                         'subject' => $note->subject->subject,
                         'note' => $note->note,
                         'coefficient' => $coefficient,
-                        'moyenne_coefficiee' => $moyenneCoefficiee
+                        'moyenne_coefficiee' => $moyenneCoefficiee,
+                        'readonly' => true // Les champs seront en lecture seule
                     ];
                 });
 
@@ -247,41 +283,42 @@ class NoteController extends Controller
                     });
 
                     $moyenneGeneraleSemester1 = $totalCoefficientSemester1 ? $totalMoyenneCoefficieeSemester1 / $totalCoefficientSemester1 : 0;
-                    $moyenneAnnuelle = (($moyenneGenerale * 2) + $moyenneGeneraleSemester1) / 3;
-
-                    // Calculer le rang pour le semestre 1 et la moyenne annuelle
-                    $rankSemester1 = array_search($moyenneGeneraleSemester1, array_values($rankings)) + 1;
-                    $rankAnnuel = array_search($moyenneAnnuelle, array_values($rankings)) + 1;
-
-                    return response()->json([
-                        'student_name' => $recording->student->name . ' ' . $recording->student->surname,
-                        'classroom' => $recording->classroom->classroom,
-                        'notes' => $notesData,
-                        'total_moyenne_coefficiee' => $totalMoyenneCoefficiee,
-                        'moyenne_generale' => $moyenneGenerale,
-                        'moyenne_annuelle' => $moyenneAnnuelle,
-                        'rank' => $rank,
-                        'rank_semester_1' => $rankSemester1,
-                        'rank_annuel' => $rankAnnuel
+                    $moyenneAnnuelle = (($moyenneGenerale * 2) + $moyenneGeneraleSemester1) / 3; }
+                    else
+                    {
+                         $moyenneAnnuelle = $moyenneGenerale;
+                         }
+                         return response()->json([
+                            'notes' => $notesData,
+                            'total_coefficient' => $totalCoefficient,
+                            'total_moyenne_coefficiee' => $totalMoyenneCoefficiee,
+                            'moyenne_generale' => $moyenneGenerale,
+                            'rank' => $rank,
+                            'moyenne_annuelle' => $moyenneAnnuelle ?? $moyenneGenerale
+                        ]);
+                    } else {
+                        return response()->json(['message' => 'Enregistrement non trouvé.'], 404);
+                    }
+                } catch (\Exception $e) {
+                    Log::error('Erreur lors de la récupération des notes de l\'élève', [
+                        'error' => $e->getMessage(),
+                        'request_data' => $request->all(),
                     ]);
+                    return response()->json(['success' => false, 'message' => 'Une erreur est survenue lors de la récupération des notes.'], 500);
                 }
-
-                return response()->json([
-                    'student_name' => $recording->student->name . ' ' . $recording->student->surname,
-                    'classroom' => $recording->classroom->classroom,
-                    'notes' => $notesData,
-                    'total_moyenne_coefficiee' => $totalMoyenneCoefficiee,
-                    'moyenne_generale' => $moyenneGenerale,
-                    'rank' => $rank
-                ]);
             }
 
-            return response()->json(['message' => 'Aucun enregistrement trouvé'], 404);
 
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Erreur lors de la récupération des notes'], 500);
-        }
-    }
+            public function getClassStudents(Request $request)
+            {
+                $students = Recording::where('year_id', $request->year_id)
+                    ->where('classroom_id', $request->classroom_id)
+                    ->with('student')
+                    ->get()
+                    ->pluck('student');
+
+                return response()->json(['students' => $students]);
+            }
 
 
     public function generateRankingPDF(Request $request)
@@ -435,14 +472,32 @@ class NoteController extends Controller
             'bulletins' => $bulletins,
             'year' => $year->year,
             'classroom' => $classroom->classroom,
-            'semester' => $request->semester_hidden,
+            'semester_hidden' => $request->semester_hidden,
         ]);
 
-        return $pdf->stream('bulletins.pdf');
+        return $pdf->download('classement_' . $classroom->classroom . '_' . $year->year . '_semestre_' . $request->semester_hidden . '.pdf');
+
+    } 
+    public function loadNotes(Request $request)
+    {
+        $classroomId = $request->input('classroom');
+        $yearId = $request->input('year');
+        $subjectId = $request->input('subject');
+        $semester = $request->input('semester');
+        $schoolId = auth()->user()->school_id; // Assurez-vous que l'utilisateur est relié à une école
+
+        // Récupération des notes en fonction des filtres
+        $notes = Note::with(['recording.student']) // Chargez la relation student
+            ->whereHas('recording', function ($query) use ($classroomId, $yearId, $schoolId) {
+                $query->where('classroom_id', $classroomId)
+                      ->where('year_id', $yearId)
+                      ->where('school_id', $schoolId);
+            })
+            ->where('subject_id', $subjectId)
+            ->where('semester', $semester)
+            ->get();
+
+        return response()->json($notes);
     }
-
-
-
-
      }
 

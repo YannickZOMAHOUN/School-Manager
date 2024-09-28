@@ -34,6 +34,10 @@ Route::group(['middleware' => 'auth'], function (){
         Route::get('/students/lists', [\App\Http\Controllers\StudentController::class, 'getStudentLists'])->name('get.student.lists');
         Route::get('/notes', [\App\Http\Controllers\NoteController::class, 'getNotes'])->name('get.notes');
         Route::post('/classement/generer', [\App\Http\Controllers\NoteController::class, 'generateRankingPDF'])->name('ranking.generate');
-        Route::post('/generate-bulletins', [\App\Http\Controllers\NoteController::class, 'generateBulletinsPDF'])->name('bulletins.generate');
+        Route::post('/generation-bulletins', [\App\Http\Controllers\NoteController::class, 'generateBulletinsPDF'])->name('bulletins.generate');
+        Route::get('/bulletins', [\App\Http\Controllers\NoteController::class, 'getcards'])->name('get.cards');
+        Route::get('/notes/load', [\App\Http\Controllers\NoteController::class, 'loadNotes'])->name('notes.load');
+
+
 
 });

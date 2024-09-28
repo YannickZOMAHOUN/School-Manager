@@ -167,7 +167,7 @@ class StudentController extends Controller
 
             // Suppression du fichier après l'importation
             Storage::delete($filePath);
-            dd($request);
+         
             // Redirection avec message de succès
             return redirect()->route('student.index')->with('success', 'Importation réussie!');
         } catch (\Exception $e) {

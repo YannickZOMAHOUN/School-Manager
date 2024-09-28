@@ -22,6 +22,7 @@
               <span class="pe-1 pe-lg-0"><i class="fas fa-user text-color-avt"></i></span>
               <span class="d-none d-md-block dropdown-toggle ps-2 text-color-avt font-light">{{ auth()->user()->staff->surname.' '.auth()->user()->staff->name }}</span>
             </a>
+            <h6>{{ auth()->user()->staff->role->role_name.' '.auth()->user()->school->school }}</h6>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile" aria-labelledby="dropdownMenuLink">
               <li class="dropdown-header">
                 <h6>{{ auth()->user()->staff->surname.' '.auth()->user()->staff->name }}</h6>

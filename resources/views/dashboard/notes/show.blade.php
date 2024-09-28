@@ -142,12 +142,12 @@
                     if (data.notes.length) {
                         data.notes.forEach(function (note) {
                             console.log(note);
-                              appreciation = 'Médiocre';
+                            let appreciation = 'N/A';
+                            if (note.note < 5) {
+                                appreciation = 'Médiocre';
                             } else if (note.note >= 5 && note.note < 10) {
                                 appreciation = 'Insuffisant';
-                            }  let appreciation = 'N/A';
-                            if (note.note < 5) {
-                             else if (note.note >= 10 && note.note < 12) {
+                            } else if (note.note >= 10 && note.note < 12) {
                                 appreciation = 'Passable';
                             } else if (note.note >= 12 && note.note < 14) {
                                 appreciation = 'Assez Bien';
@@ -158,7 +158,6 @@
                             } else {
                                 appreciation = 'Honorable';
                             }
-
                             let editUrl = '{{ route("note.edit", ":id") }}';
                             editUrl = editUrl.replace(':id', note.id);
                             let deleteUrl = '{{ route("note.destroy", ":id") }}';
