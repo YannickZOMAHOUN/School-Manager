@@ -5,7 +5,7 @@
     @csrf
     <div class="mb-3">
         <label for="email" class="form-label font-medium text-color-avt">Email</label>
-        <input type="text" class="form-control rounded-pill py-2" name="email">
+        <input type="email" class="form-control rounded-pill py-2" name="email" value="{{ old('email') }}" required>
 
         @if($errors->has('email'))
         <span class="text-danger fs-12">{{ $errors->first('email') }}</span>
@@ -13,7 +13,7 @@
     </div>
     <div class="mb-3">
         <label for="password" class="form-label font-medium text-color-avt">Mot de passe</label>
-        <input type="password" class="form-control rounded-pill py-2" name="password">
+        <input type="password" class="form-control rounded-pill py-2" name="password" required>
 
         @if($errors->has('password'))
         <span class="text-danger fs-12">{{ $errors->first('password') }}</span>

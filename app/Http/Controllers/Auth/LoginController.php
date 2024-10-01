@@ -4,6 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\TwoFactorCodeMail;
+use Carbon\Carbon;
+use Illuminate\Http\Request;
+
 
 class LoginController extends Controller
 {
@@ -37,4 +42,19 @@ class LoginController extends Controller
         $this->middleware('guest')->except('logout');
         $this->middleware('auth')->only('logout');
     }
+
+    protected function authenticated(Request $request, $user)
+    {
+        // Générer un code 2FA
+        $user->two_fa_code = rand(100000, 999999); // Code à 6 chiffres
+        $user->two_fa_expires_at = Carbon::now()->addMinutes(10); // Expire dans 10 minutes
+        $user->save();
+
+        // Envoyer le code par email
+        Mail::to($user->email)->send(new TwoFactorCodeMail($user));
+
+        // Rediriger vers la page de vérification du code 2FA
+        return redirect()->route('two_fa.verify');
+    }
+
 }

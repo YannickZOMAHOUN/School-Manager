@@ -472,12 +472,11 @@ class NoteController extends Controller
             'bulletins' => $bulletins,
             'year' => $year->year,
             'classroom' => $classroom->classroom,
-            'semester_hidden' => $request->semester_hidden,
+            'semester' => $request->semester_hidden,
         ]);
 
-        return $pdf->download('classement_' . $classroom->classroom . '_' . $year->year . '_semestre_' . $request->semester_hidden . '.pdf');
-
-    } 
+        return $pdf->stream('bulletins.pdf');
+    }
     public function loadNotes(Request $request)
     {
         $classroomId = $request->input('classroom');
@@ -496,8 +495,8 @@ class NoteController extends Controller
             ->where('subject_id', $subjectId)
             ->where('semester', $semester)
             ->get();
+    return response()->json($notes);
+}
 
-        return response()->json($notes);
-    }
      }
 

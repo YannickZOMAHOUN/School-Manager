@@ -65,7 +65,7 @@ class StudentController extends Controller
                 'sex' => $request->sex,
                 'birthday' => $request->birthday,
                 'birthplace' => $request->birthplace,
-                'school_id' => auth()->user()->school_id,
+                'school_id' => auth()->user()->school->id,
             ]);
 
             // Enregistrement dans la table recording
@@ -73,7 +73,7 @@ class StudentController extends Controller
                 'student_id' => $student->id,
                 'classroom_id' => $request->classroom_id,
                 'year_id' => $request->year_id,
-                'school_id' => auth()->user()->school_id,
+                'school_id' => auth()->user()->school->id,
             ]);
 
             return redirect()->route('students.index')->with('success', 'L\'élève a été ajouté avec succès.');
@@ -167,7 +167,7 @@ class StudentController extends Controller
 
             // Suppression du fichier après l'importation
             Storage::delete($filePath);
-         
+
             // Redirection avec message de succès
             return redirect()->route('student.index')->with('success', 'Importation réussie!');
         } catch (\Exception $e) {

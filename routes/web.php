@@ -1,6 +1,7 @@
 <?php
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Route;
 Auth::routes();
 Route::get('/', function () {return redirect('login');});
 Route::resource('school', \App\Http\Controllers\SchoolController::class);
-Route::group(['middleware' => 'auth'], function (){
+Route::group(['middleware' => 'auth','two_fa'], function (){
         Route::resource('dashboard', \App\Http\Controllers\HomeController::class);
         Route::resource('classroom', \App\Http\Controllers\ClassroomController::class);
         Route::resource('student', \App\Http\Controllers\StudentController::class);
@@ -37,7 +38,17 @@ Route::group(['middleware' => 'auth'], function (){
         Route::post('/generation-bulletins', [\App\Http\Controllers\NoteController::class, 'generateBulletinsPDF'])->name('bulletins.generate');
         Route::get('/bulletins', [\App\Http\Controllers\NoteController::class, 'getcards'])->name('get.cards');
         Route::get('/notes/load', [\App\Http\Controllers\NoteController::class, 'loadNotes'])->name('notes.load');
+        Route::get('/two_fa/verify', [\App\Http\Controllers\Auth\TwoFactorController::class, 'showVerifyForm'])->name('two_fa.verify');
+        Route::post('/two_fa/verify', [\App\Http\Controllers\Auth\TwoFactorController::class, 'verify'])->name('two_fa.verify.post');
 
 
+Route::get('/test-email', function () {
+    Mail::raw('This is a test email from Laravel', function ($message) {
+        $message->to('yannickzomahoun75@gmail.com')
+                ->subject('Test Email');
+    });
+
+    return 'Email sent';
+});
 
 });
