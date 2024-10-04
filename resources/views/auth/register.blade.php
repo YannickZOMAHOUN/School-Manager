@@ -9,9 +9,7 @@
   <meta content="" name="description">
   <meta content="" name="keywords">
 
-  <!-- Favicons -->
-  <link href="assets/img/favicon.png" rel="icon">
-  <link href="assets/img/apple-touch-icon.png" rel="apple-touch-icon">
+
 
     <!-- Include CSS files -->
     @include("layouts.css")
@@ -133,7 +131,7 @@
                             <div class="row mb-3">
                                 <div class="col-md-6">
                                     <label for="number" class="form-label font-medium text-color-avt">Numéro de téléphone</label>
-                                    <input type="telephone" name="number" class="form-control rounded-pill py-2 @error('number') is-invalid @enderror" id="number" value="{{ old('number') }}" required>
+                                    <input type="tel" name="number" class="form-control rounded-pill py-2 @error('number') is-invalid @enderror" id="number" required>
                                     @error('number')
                                         <span class="text-danger">{{ $message }}</span>
                                     @enderror

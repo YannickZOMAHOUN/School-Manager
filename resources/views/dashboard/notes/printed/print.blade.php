@@ -5,73 +5,115 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulletin(s)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');
-
         body {
-            font-family: 'Roboto', sans-serif;
+            font-family: DejaVu Sans, sans-serif; /* Compatible avec Dompdf */
             margin: 0;
             padding: 0;
-            background-color: #f0f4f8;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+        }
+
+        .header {
+            width: 100%;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
+        }
+
+        /* Table pour diviser l'en-tête en deux colonnes */
+        .header-table {
+            width: 100%;
+        }
+
+        .header-left {
+            width: 50%;
+            text-align: left;
+        }
+
+        .header-right {
+            width: 50%;
+            text-align: right;
+        }
+
+        .header-left img {
+            height: 80px; /* Ajustez la hauteur du logo si nécessaire */
+        }
+
+        .header-right {
+            font-size: 10px;
+            line-height: 1.4;
+        }
+
+        .underline {
+            display: block;
+            width: 100%;
+            border-bottom: 2px solid rgb(37, 39, 153);
+            margin-top: 5px;
         }
 
         .progress-card {
-            width: 600px;
+            width: 100%;
             background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 15px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .progress-card:hover {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+            padding: 10px;
+            border: 1px solid #ddd;
+            margin-bottom: 20px;
         }
 
         h1 {
             margin: 0;
-            font-size: 22px;
+            font-size: 18px;
             color: #34495E;
+            text-align: center;
         }
 
-        .header-title {
-            background-color: #34495E;
-            color: #fff;
-            padding: 15px 0;
-            margin-bottom: 20px;
-            border-radius: 8px 8px 0 0;
-        }
-
-        .header-title .subtitle {
-            font-size: 16px;
-            font-weight: normal;
-            margin-top: 5px;
-        }
-
+        /* Informations de l'élève en colonnes */
         .header-info {
-            margin: 20px 0;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
+            width: 100%;
+            margin-bottom: 10px;
+        }
+
+        .header-info-table {
+            width: 100%;
+            border-spacing: 10px; /* Espacement entre les colonnes */
+        }
+
+        .header-info-table td {
+            font-size: 12px;
+            vertical-align: top;
+        }
+
+        /* Informations de présence */
+        .attendance {
+            text-align: left;
+            font-size: 12px;
+            color: #333;
+        }
+
+        .attendance h3 {
             font-size: 14px;
-            color: #555;
+            color: #34495E;
+            margin-bottom: 10px;
+        }
+
+        footer {
+            font-size: 10px;
+            color: #777;
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .page-break {
+            page-break-after: always; /* Pour forcer un saut de page entre les bulletins */
         }
 
         .grades-table {
             width: 100%;
             border-collapse: collapse;
-            margin: 20px 0;
+            margin-bottom: 20px;
         }
 
         .grades-table th, .grades-table td {
             border: 1px solid #ddd;
-            padding: 10px;
+            padding: 8px;
             text-align: center;
-            font-size: 14px;
+            font-size: 12px;
         }
 
         .grades-table th {
@@ -79,83 +121,60 @@
             color: white;
         }
 
-        .grades-table tbody tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-
-        .attendance {
-            text-align: left;
-            margin: 25px 0;
-            font-size: 14px;
-            color: #333;
-        }
-
-        .attendance h3 {
-            font-size: 18px;
-            color: #34495E;
-            margin-bottom: 10px;
-        }
-
-        footer {
-            margin-top: 30px;
-            font-size: 12px;
-            color: #777;
-            text-align: center;
-        }
-
-        footer div {
-            margin-bottom: 5px;
-        }
-
-        .page-break {
-            page-break-after: always;
-        }
-
-        @media print {
-            body {
-                background-color: white;
-            }
-
-            .progress-card {
-                box-shadow: none;
-                border-radius: 0;
-                width: 100%;
-            }
-
-            footer {
-                display: none;
-            }
-
-            .grades-table th, .grades-table td {
-                border: 1px solid black;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .progress-card {
-                width: 90%;
-            }
-        }
     </style>
 </head>
 <body>
-
     @foreach ($bulletins as $bulletin)
+    <div class="header">
+        <table class="header-table">
+            <tr>
+                <td class="header-left">
+                    <!-- Image du logo -->
+                    <img src="{{ public_path('images/logobul.png') }}" alt="Logo du Bénin">
+                </td>
+                <td class="header-right">
+                    Route de l'aéroport<br>
+                    📫 : 10 BP 250 Cotonou<br>
+                    📞 : (229) 21 32 38 43 ; Fax : 21 32 41 88<br>
+                    web: www.enseignementsecondaire.gouv.bj
+                </td>
+            </tr>
+        </table>
+        <div class="underline"></div>
+    </div>
+    <div style="font-family: Arial, Helvetica, sans-serif; font-size: 20px; text-align: center;">
+        BULLETIN DE NOTES
+    </div>
+
     <div class="progress-card">
+        <!-- Titre de l'école et du bulletin -->
         <div class="header-title">
             <h1>{{ auth()->user()->school->school }}</h1>
-            <div class="subtitle">Bulletin de Notes</div>
+
         </div>
 
+        <!-- Informations sur l'élève (Réparties sur 2 à 3 colonnes) -->
         <div class="header-info">
-            <div>Nom : {{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</div>
-            <div>Année scolaire : {{ $year }}</div>
-            <div>Classe : {{ $classroom }}</div>
-            <div>Semestre : {{ $semester }}</div>
-            <div>Matricule : {{ $bulletin['student']['matricule'] }}</div>
-            <div>Date et lieu de naissance : {{ \Carbon\Carbon::parse($bulletin['student']['birthday'])->format('d/m/Y') }} à {{ $bulletin['student']['birthplace'] }}</div>
+            <table class="header-info-table">
+                <tr>
+                    <td>Matricule : {{ $bulletin['student']['matricule'] }}</td>
+                    <td>Nom : {{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</td>
+                </tr>
+                <tr>
+                    <td>Date et lieu de naissance : {{ \Carbon\Carbon::parse($bulletin['student']['birthday'])->format('d/m/Y') }} à {{ $bulletin['student']['birthplace'] }}</td>
+                    <td>Année scolaire : {{ $year }}</td>
+
+                </tr>
+                <td>Classe : {{ $classroom }}</td>
+                <td>Semestre : {{ $semester }}</td>
+                <tr>
+                    <td>Effectif de la classe : {{ $classSize }}</td>
+
+                </tr>
+            </table>
         </div>
 
+        <!-- Tableau des notes -->
         <table class="grades-table">
             <thead>
                 <tr>
@@ -179,18 +198,20 @@
             </tbody>
         </table>
 
+        <!-- Section de présence -->
         <div class="attendance">
             <h3>Récapitulatif</h3>
             <div>Total des moyennes coefficientées : {{ $bulletin['total_moyenne_coefficiee'] }}</div>
             <div>Moyenne générale : {{ $bulletin['moyenne_generale'] }}</div>
         </div>
 
+        <!-- Pied de page -->
         <footer>
-            <div>Votre Logo</div>
-            <div>Contact : 123 Rue Christopher, Email : info@votresite.com, Téléphone : 123-456-7890</div>
+            <div>Contact : 123 Rue Christopher...</div>
         </footer>
     </div>
 
+    <!-- Saut de page entre chaque bulletin -->
     <div class="page-break"></div>
     @endforeach
 

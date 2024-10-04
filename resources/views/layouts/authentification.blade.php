@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>School Manager</title>
-
+     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('images/logoicon.png') }}">
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="{{ asset('css/bootstrap/bootstrap.min.css') }}">
 

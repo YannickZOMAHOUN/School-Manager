@@ -37,7 +37,7 @@
 </div>
 
 <div class="d-flex justify-content-between my-2 flex-wrap">
-    <div class="text-color-avt fs-22">Matières de l'école {{ auth()->user()->school->name }}</div>
+    <div class="text-color-avt fs-22">Matières de l'école {{ auth()->user()->school->school }}</div>
 </div>
 
 <div class="card p-3">

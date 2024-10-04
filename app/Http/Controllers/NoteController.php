@@ -17,8 +17,9 @@ class NoteController extends Controller
 {
     public function show($student_id)
     {
-        // Rechercher l'enregistrement dans le modèle Recording
+        $schoolId = auth()->user()->school->id;
         $recording = Recording::where('student_id', $student_id)
+            ->where('school_id',$schoolId)
             ->with('student', 'classroom', 'year', 'notes') // Charger les relations nécessaires
             ->first();
 
@@ -27,9 +28,9 @@ class NoteController extends Controller
             return redirect()->back()->with('error', 'Enregistrement non trouvé.');
         }
 
-        // Récupérer toutes les années et les classes
-        $years = Year::all();
-        $classrooms = Classroom::all();
+        $years = Year::where('school_id', $schoolId)->get();
+        $classrooms = Classroom::where('school_id', $schoolId)->get();
+
 
         // Passer les données à la vue
         return view('dashboard.notes.show', compact('recording', 'years', 'classrooms'));
@@ -37,8 +38,9 @@ class NoteController extends Controller
 
     public function getcards() {
         try {
-            $classrooms = Classroom::all();
-            $years = Year::all();
+            $schoolId = auth()->user()->school->id;
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
+            $years = Year::where('school_id', $schoolId)->get();
             return view('dashboard.notes.card', compact([ 'classrooms', 'years']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
@@ -47,9 +49,10 @@ class NoteController extends Controller
     }
     public function index() {
         try {
-            $classrooms = Classroom::all();
-            $years = Year::all();
-            $subjects = Subject::all();
+            $schoolId = auth()->user()->school->id;
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
+            $years = Year::where('school_id', $schoolId)->get();
+            $subjects = Subject::where('school_id', $schoolId)->get();
             return view('dashboard.notes.list', compact([ 'classrooms', 'years','subjects']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
@@ -68,6 +71,7 @@ class NoteController extends Controller
     public function getRatio(Request $request) {
         $ratio = Ratio::where('subject_id', $request->subject_id)
                       ->where('classroom_id', $request->classroom_id)
+                      ->where('school_id', auth()->user()->school_id)
                       ->first();
 
         if ($ratio) {
@@ -85,22 +89,23 @@ class NoteController extends Controller
 
     public function create() {
         try {
-            $subjects = Subject::all();
-            $classrooms = Classroom::all();
-            $years = Year::all();
-            $students = Student::all();
+            $subjects = Subject::where('school_id', auth()->user()->school_id)->get();
+            $classrooms = Classroom::where('school_id', auth()->user()->school_id)->get();
+            $years = Year::where('school_id', auth()->user()->school_id)->get();
+            $students = Student::where('school_id', auth()->user()->school_id)->get();
             return view('dashboard.notes.create', compact(['subjects', 'classrooms', 'students', 'years']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
             abort(404);
         }
     }
+    
     public function edit(Note $note) {
         try {
-            $subjects = Subject::all();
-            $classrooms = Classroom::all();
-            $years = Year::all();
-            $students = Student::all();
+            $subjects = Subject::where('school_id', auth()->user()->school_id)->get();
+            $classrooms = Classroom::where('school_id', auth()->user()->school_id)->get();
+            $years = Year::where('school_id', auth()->user()->school_id)->get();
+            $students = Student::where('school_id', auth()->user()->school_id)->get();
             return view('dashboard.notes.edit', compact(['subjects', 'classrooms', 'students', 'years','note']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
@@ -202,6 +207,7 @@ class NoteController extends Controller
             $recording = Recording::where('student_id', $request->student_id)
                 ->where('year_id', $request->year_id)
                 ->where('classroom_id', $request->classroom_id)
+                ->where('school_id', auth()->user()->school_id)
                 ->first();
 
             if ($recording) {
@@ -236,6 +242,7 @@ class NoteController extends Controller
                 // Calculer le rang pour le semestre courant
                 $students = Recording::where('year_id', $request->year_id)
                     ->where('classroom_id', $request->classroom_id)
+                    ->where('school_id', auth()->user()->school_id)
                     ->get();
 
                 $rankings = [];
@@ -243,6 +250,7 @@ class NoteController extends Controller
                     $studentNotes = Note::where('recording_id', $student->id)
                         ->where('semester', $request->semester)
                         ->with('ratio')
+                        ->where('school_id', auth()->user()->school_id)
                         ->get();
 
                     $studentTotalCoefficient = 0;
@@ -268,9 +276,9 @@ class NoteController extends Controller
                     // Calculer la moyenne annuelle
                     $notesSemester1 = Note::where('recording_id', $recording->id)
                         ->where('semester', 1)
+                        ->where('school_id', auth()->user()->school_id)
                         ->with('subject', 'ratio')
                         ->get();
-
                     $totalCoefficientSemester1 = 0;
                     $totalMoyenneCoefficieeSemester1 = 0;
 
@@ -313,6 +321,7 @@ class NoteController extends Controller
             {
                 $students = Recording::where('year_id', $request->year_id)
                     ->where('classroom_id', $request->classroom_id)
+                    ->where('school_id', auth()->user()->school_id)
                     ->with('student')
                     ->get()
                     ->pluck('student');
@@ -338,6 +347,7 @@ class NoteController extends Controller
             // Récupérer les enregistrements pour l'année scolaire, la classe et le semestre spécifiés
             $recordings = Recording::where('year_id', $request->year_id)
                 ->where('classroom_id', $request->classroom_id)
+                ->where('school_id', auth()->user()->school_id)
                 ->with(['student', 'notes' => function ($query) use ($request) {
                     $query->where('semester', $request->semester_hidden)->with('ratio');
                 }])
@@ -385,7 +395,7 @@ class NoteController extends Controller
                 'semester_hidden' => $request->semester_hidden,
             ]);
 
-            return $pdf->stream('classement.pdf');
+            return $pdf->stream('classement-' . $classroom->classroom . '-semestre' . $request->semester_hidden . '-' . $year->year . '.pdf');
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Erreur lors de la génération du classement.');
         }
@@ -400,13 +410,15 @@ class NoteController extends Controller
             'semester_hidden' => 'required|in:1,2',
         ]);
 
-        // Récupérer l'année scolaire et la classe
+        // Récupérer l'année scolaire, la classe et l'école de l'utilisateur connecté
         $year = Year::findOrFail($request->year_id);
         $classroom = Classroom::findOrFail($request->classroom_id);
+        $schoolId = auth()->user()->school->id;
 
-        // Récupérer les enregistrements pour l'année scolaire, la classe et le semestre spécifiés
+        // Récupérer les enregistrements pour l'année scolaire, la classe, le semestre et l'école spécifiés
         $recordings = Recording::where('year_id', $request->year_id)
             ->where('classroom_id', $request->classroom_id)
+            ->where('school_id', $schoolId)  // Filtrer par école
             ->with(['student', 'notes' => function ($query) use ($request) {
                 $query->where('semester', $request->semester_hidden)->with('ratio', 'subject');
             }])
@@ -416,6 +428,12 @@ class NoteController extends Controller
         if ($recordings->isEmpty()) {
             return redirect()->back()->with('error', 'Aucun bulletin trouvé pour les critères sélectionnés.');
         }
+
+        // Récupérer l'effectif de la classe pour cette année et cette école
+        $classSize = Recording::where('year_id', $request->year_id)
+            ->where('classroom_id', $request->classroom_id)
+            ->where('school_id', $schoolId)
+            ->count(); // Compter le nombre d'enregistrements (effectif)
 
         // Fonction pour déterminer l'appréciation
         function getAppreciation($note) {
@@ -473,10 +491,12 @@ class NoteController extends Controller
             'year' => $year->year,
             'classroom' => $classroom->classroom,
             'semester' => $request->semester_hidden,
+            'classSize' => $classSize, // Ajout de l'effectif de la classe dans la vue
         ]);
 
-        return $pdf->stream('bulletins.pdf');
+        return $pdf->stream('Bulletins-'. $classroom->classroom . '-semestre' . $request->semester_hidden . '-' . $year->year . '.pdf');
     }
+
     public function loadNotes(Request $request)
     {
         $classroomId = $request->input('classroom');
@@ -490,12 +510,78 @@ class NoteController extends Controller
             ->whereHas('recording', function ($query) use ($classroomId, $yearId, $schoolId) {
                 $query->where('classroom_id', $classroomId)
                       ->where('year_id', $yearId)
+                      ->where('school_id', auth()->user()->school_id)
                       ->where('school_id', $schoolId);
             })
             ->where('subject_id', $subjectId)
             ->where('semester', $semester)
             ->get();
     return response()->json($notes);
+}
+public function getNotes(Request $request)
+{
+    // Valider la requête entrante
+    $request->validate([
+        'year_id' => 'required|integer|exists:years,id',
+        'classroom_id' => 'required|integer|exists:classrooms,id',
+        'subject_id' => 'required|integer|exists:subjects,id',
+        'semester' => 'required|string|in:1,2', // Ajustez selon vos besoins
+    ]);
+
+    try {
+        $yearId = $request->year_id;
+        $classroomId = $request->classroom_id;
+        $subjectId = $request->subject_id;
+        $semester = $request->semester;
+
+        // Récupérer les étudiants dans la classe et l'année spécifiées
+        $students = Student::whereHas('recordings', function ($query) use ($yearId, $classroomId) {
+            $query->where('year_id', $yearId)
+                  ->where('classroom_id', $classroomId)
+                  ->where('school_id', auth()->user()->school_id);
+        })->get(); // Pas besoin de charger les notes ici
+
+        // Transformer les données
+        $notesData = $students->map(function ($student) use ($yearId, $classroomId, $subjectId, $semester) {
+            // Récupérer l'enregistrement de l'étudiant pour l'année et la classe spécifiées
+            $recording = Recording::where('student_id', $student->id)
+                ->where('year_id', $yearId)
+                ->where('classroom_id', $classroomId)
+                ->first();
+
+            // Vérifier si l'enregistrement existe
+            if ($recording) {
+                // Récupérer la note associée à cet enregistrement
+                $note = $recording->notes()->where('subject_id', $subjectId)
+                                             ->where('semester', $semester)
+                                             ->first();
+
+                return [
+                    'student_name' => $student->name,
+                    'student_surname' => $student->surname,
+                    'average' => $note ? $note->note : null, // Utilisez 'note' ici
+                ];
+            }
+
+            // Si aucun enregistrement n'existe, renvoyer null pour la note
+            return [
+                'student_name' => $student->name,
+                'student_surname' => $student->surname,
+                'average' => null,
+            ];
+        });
+
+        // Vérifier si notesData est vide
+        if ($notesData->isEmpty()) {
+            return response()->json(['message' => 'Aucune note trouvée.'], 404);
+        }
+
+        Log::info('Notes récupérées:', $notesData->toArray());
+        return response()->json($notesData);
+    } catch (\Exception $e) {
+        Log::error('Erreur lors de la récupération des notes: ' . $e->getMessage());
+        return response()->json(['message' => 'Erreur lors de la récupération des notes.'], 500);
+    }
 }
 
      }

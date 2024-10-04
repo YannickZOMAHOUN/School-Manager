@@ -10,6 +10,7 @@ class YearController extends Controller
 {
     public function create(){
         try{
+            $schoolId = auth()->user()->school->id;
             $years=year::query()->get();
             return view('dashboard.years.create',compact('years'));
         }catch (\Exception $e){

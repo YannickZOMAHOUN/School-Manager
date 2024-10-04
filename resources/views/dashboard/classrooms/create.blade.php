@@ -46,6 +46,7 @@
         <div class="table-responsive">
             <table id="example" class="table table-striped table-bordered" style="width:100%">
                 <thead>
+
                 <tr class="text-center">
                     <th>Nom</th>
                     <th>Actions</th>
@@ -53,6 +54,7 @@
                 </thead>
                 <tbody>
                @foreach($classrooms as $key=>$classroom)
+               @if($classroom->school_id == auth()->user()->school->id)
                     <tr>
                         <td>{{ $classroom->classroom }}</td>
                         <td class="text-center" style="cursor: pointer">
@@ -83,6 +85,7 @@
                                     </div>
                                 </div>
                             </div>
+                            @endif
                @endforeach
                 </tbody>
             </table>

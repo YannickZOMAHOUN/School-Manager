@@ -17,8 +17,10 @@ class StudentController extends Controller
     // Affiche la vue de création d'un étudiant
     public function create() {
         try {
-            $classrooms = Classroom::all();
-            $years = Year::all();
+            $schoolId = auth()->user()->school->id;
+
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
+            $years = Year::where('school_id', $schoolId)->get();
             return view('dashboard.students.create', compact('classrooms', 'years'));
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'accès à la page de création : " . $e->getMessage());
