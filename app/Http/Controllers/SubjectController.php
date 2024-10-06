@@ -13,7 +13,7 @@ class SubjectController extends Controller
         try {
             $schoolId = auth()->user()->school->id; // Récupérer l'ID de l'école de l'utilisateur
             $subjects = Subject::where('school_id', $schoolId)->get(); // Filtrer par école
-            return view('dashboard.subjects.create', compact('subjects'));
+            return view ('dashboard.subjects.create', compact('subjects'));
         } catch (\Exception $e) {
             Log::error($e->getMessage());
             abort(404);
