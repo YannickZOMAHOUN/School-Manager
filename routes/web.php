@@ -25,7 +25,7 @@ Route::get('/', function () {
 
 // Routes accessibles sans authentification
 Route::resource('school', \App\Http\Controllers\SchoolController::class);
-
+Route::get('/get-roles', [\App\Http\Controllers\Auth\RegisterController::class, 'getRoles'])->name('getRoles');
 // Groupe de routes protégées par le middleware `auth` (utilisateur doit être connecté)
 Route::group(['middleware' => ['auth']], function () {
 
@@ -41,8 +41,6 @@ Route::group(['middleware' => ['auth']], function () {
         Route::resource('staff', \App\Http\Controllers\StaffController::class);
         Route::resource('user', \App\Http\Controllers\UserController::class);
 
-
-        // Routes spécifiques liées à l'importation et génération des données
         Route::get('/file-import', [\App\Http\Controllers\StudentController::class, 'importView'])->name('import_view');
         Route::post('/import', [\App\Http\Controllers\StudentController::class, 'import'])->name('import');
 
@@ -62,6 +60,9 @@ Route::group(['middleware' => ['auth']], function () {
 
         // Suppression massive de ratios
         Route::delete('/ratios/destroy-all', [\App\Http\Controllers\RatioController::class, 'destroyAll'])->name('ratios.destroy.all');
+
+        Route::get('disable/{year}',[\App\Http\Controllers\YearController::class,'disableyear'])->name('disable_year');
+        Route::get('activate/{year}',[\App\Http\Controllers\YearController::class,'activateyear'])->name('activate_year');
     });
 
     // Routes protégées nécessitant uniquement l'authentification, pas de 2FA

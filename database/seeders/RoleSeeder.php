@@ -12,12 +12,12 @@ class RoleSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run()
+    /*public function run()
     {
         $roles = ['Directeur', 'Censeur', 'Surveillant', 'Professeur Principal', 'Enseignant'];
 
         foreach ($roles as $role) {
             Role::create(['role_name' => $role]);
         }
-    }
+    }*/
 }

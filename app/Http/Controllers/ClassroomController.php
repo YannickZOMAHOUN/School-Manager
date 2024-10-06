@@ -12,7 +12,7 @@ class ClassroomController extends Controller
     public function create(){
         try{
             $schoolId = auth()->user()->school->id;
-            $classrooms=Classroom::query()->get();
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
             return view('dashboard.classrooms.create',compact('classrooms'));
         }catch (\Exception $e){
             Log::info($e->getMessage());

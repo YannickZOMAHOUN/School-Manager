@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
@@ -96,15 +97,42 @@ class RegisterController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function showRegistrationForm()
+    public function showRegistrationForm(Request $request)
     {
         $schools = School::all();
-        $roles = Role::all();
+        $roles = []; // Initialement vide
+
+        // Vérifiez si school_id est présent dans la requête
+        if ($request->has('school_id')) {
+            $roles = Role::where('school_id', $request->input('school_id'))->get();
+        }
 
         // Récupérer l'école depuis la session
         $school_id = session('school_id');
         $school_name = session('school_name');
 
         return view('auth.register', compact('schools', 'roles', 'school_id', 'school_name'));
+    }
+
+    /**
+     * Get roles based on school ID.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getRoles(Request $request)
+    {
+        try {
+            // Valider la requête
+            //$request->validate(['school_id' => 'required|exists:schools,id']);
+
+            // Récupérer les rôles associés à l'école
+            $roles = Role::where('school_id', $request->school_id)->get();
+            // Retourner les rôles en format JSON
+            return response()->json(['roles' => $roles]);
+        } catch (\Exception $e) {
+            // Gérer les erreurs et retourner un message d'erreur
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }

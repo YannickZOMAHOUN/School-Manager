@@ -40,4 +40,7 @@ class School extends Model
     public function years(){
         return $this->hasMany(Year::class);
     }
+    public function roles(){
+        return $this->hasMany(Role::class);
+    }
 }

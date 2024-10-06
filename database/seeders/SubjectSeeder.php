@@ -11,9 +11,9 @@ class SubjectSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+   /* public function run(): void
     {
-            Subject::create(['subject' => 'Français']);
+        Subject::create(['subject' => 'Français']);
          Subject::create(['subject' => 'Mathématiques']);
          Subject::create(['subject' => 'Anglais']);
          Subject::create(['subject' => 'Histoire-Géographie']);
@@ -22,5 +22,5 @@ class SubjectSeeder extends Seeder
          Subject::create(['subject' => 'Lecture']);
          Subject::create(['subject' => 'Communication-Ecrite']);
 
-    }
+    }*/
 }

@@ -30,7 +30,6 @@ class HomeController extends Controller
     public function index()
     {
         $schoolId = auth()->user()->school->id;
-
         $classrooms = Classroom::where('school_id', $schoolId)->count();
         $students = Student::where('school_id', $schoolId)->count();
         $staff = Staff::where('school_id', $schoolId)->count();

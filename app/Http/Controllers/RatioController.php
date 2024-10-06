@@ -92,8 +92,9 @@ class RatioController extends Controller
 
     public function edit(Ratio $ratio) {
         try {
-            $subjects = Subject::all();
-            $classrooms = Classroom::all();
+            $schoolId = auth()->user()->school->id;
+            $subjects = Subject::where('school_id', $schoolId)->get();
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
             return view('dashboard.ratios.edit', compact('ratio', 'subjects', 'classrooms'));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
@@ -130,9 +131,7 @@ class RatioController extends Controller
 {
     // Supprime tous les coefficients associés à l'école de l'utilisateur connecté
     $schoolId = auth()->user()->school->id;
-
     Ratio::where('school_id', $schoolId)->delete();
-
     return redirect()->back()->with('success', 'Tous les coefficients ont été supprimés.');
 }
 

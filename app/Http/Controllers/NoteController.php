@@ -22,17 +22,11 @@ class NoteController extends Controller
             ->where('school_id',$schoolId)
             ->with('student', 'classroom', 'year', 'notes') // Charger les relations nécessaires
             ->first();
-
-        // Si l'enregistrement n'existe pas, renvoyer une erreur
         if (!$recording) {
             return redirect()->back()->with('error', 'Enregistrement non trouvé.');
         }
-
-        $years = Year::where('school_id', $schoolId)->get();
+        $years = Year::where('school_id', $schoolId)->where('status',true)->get();
         $classrooms = Classroom::where('school_id', $schoolId)->get();
-
-
-        // Passer les données à la vue
         return view('dashboard.notes.show', compact('recording', 'years', 'classrooms'));
     }
 
@@ -41,6 +35,7 @@ class NoteController extends Controller
             $schoolId = auth()->user()->school->id;
             $classrooms = Classroom::where('school_id', $schoolId)->get();
             $years = Year::where('school_id', $schoolId)->get();
+
             return view('dashboard.notes.card', compact([ 'classrooms', 'years']));
         } catch (\Exception $e) {
             Log::info($e->getMessage());
@@ -51,7 +46,8 @@ class NoteController extends Controller
         try {
             $schoolId = auth()->user()->school->id;
             $classrooms = Classroom::where('school_id', $schoolId)->get();
-            $years = Year::where('school_id', $schoolId)->get();
+                        $years = Year::where('school_id', $schoolId)->where('status',true)->get();
+
             $subjects = Subject::where('school_id', $schoolId)->get();
             return view('dashboard.notes.list', compact([ 'classrooms', 'years','subjects']));
         } catch (\Exception $e) {
@@ -91,7 +87,7 @@ class NoteController extends Controller
         try {
             $subjects = Subject::where('school_id', auth()->user()->school_id)->get();
             $classrooms = Classroom::where('school_id', auth()->user()->school_id)->get();
-            $years = Year::where('school_id', auth()->user()->school_id)->get();
+            $years = Year::where('school_id', auth()->user()->school_id)->where('status',true)->get();
             $students = Student::where('school_id', auth()->user()->school_id)->get();
             return view('dashboard.notes.create', compact(['subjects', 'classrooms', 'students', 'years']));
         } catch (\Exception $e) {
@@ -99,12 +95,12 @@ class NoteController extends Controller
             abort(404);
         }
     }
-    
+
     public function edit(Note $note) {
         try {
             $subjects = Subject::where('school_id', auth()->user()->school_id)->get();
             $classrooms = Classroom::where('school_id', auth()->user()->school_id)->get();
-            $years = Year::where('school_id', auth()->user()->school_id)->get();
+            $years = Year::where('school_id', auth()->user()->school_id)->where('status',true)->get();
             $students = Student::where('school_id', auth()->user()->school_id)->get();
             return view('dashboard.notes.edit', compact(['subjects', 'classrooms', 'students', 'years','note']));
         } catch (\Exception $e) {

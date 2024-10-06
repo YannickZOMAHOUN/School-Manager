@@ -11,7 +11,7 @@ class YearController extends Controller
     public function create(){
         try{
             $schoolId = auth()->user()->school->id;
-            $years=year::query()->get();
+            $years=Year::query()->get();
             return view('dashboard.years.create',compact('years'));
         }catch (\Exception $e){
             Log::info($e->getMessage());
@@ -20,7 +20,7 @@ class YearController extends Controller
     }
     public function store(Request $request) {
         try {
-                year::query()->create([
+                Year::query()->create([
                 'year'=>$request->year,
                 'school_id'=>auth()->user()->school->id,
             ]);
@@ -61,4 +61,30 @@ class YearController extends Controller
             abort(404);
         }
     }
+
+    public function disableyear(Year $year) {
+        try {
+
+            $year->update(['status' => false]); // Désactive l'année scolaire
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de la désactivation de l\'année scolaire : ' . $e->getMessage());
+            return redirect()->back()->with('error', __('messages.generic_error'));
+        }
+    }
+
+
+    public function activateyear(Year $year) {
+        try {
+            $year->update(['status' => true]);
+
+            return redirect()->back();
+        } catch (\Exception $e) {
+            Log::error('Erreur lors de l\'activation de l\'année scolaire : ' . $e->getMessage());
+            return redirect()->back()->with('error', __('messages.generic_error'));
+        }
+    }
+
+
 }

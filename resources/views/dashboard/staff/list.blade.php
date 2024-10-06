@@ -24,35 +24,44 @@
                     <th>Fonction</th>
                     <th>Nom</th>
                     <th>Prénom(s)</th>
+                    <th>Sexe</th>
                     <th>Email</th>
                     <th>Numéro de téléphone</th>
                     <th>Actions </th>
                 </tr>
                 </thead>
                 <tbody>
-                @foreach($staff as $key=>$staff)
+                    @foreach($staff as $key => $member)
                     <tr>
-                        <td>{{ $staff->role->role_name }}</td>
-                        <td>{{ $staff->name}}</td>
-                        <td>{{ $staff->surname}}</td>
-                        <td>{{ $staff->user->email }}</td>
-                        <td>{{ $staff->number }}</td>
+                        <td>{{ $member->role->role_name }}</td>
+                        <td>{{ $member->name }}</td>
+                        <td>{{ $member->surname }}</td>
+                        <td>@if ($member->sex == 'M')
+                            Masculin
+                        @elseif ($member->sex == 'F')
+                            Féminin
+                        @else
+                            Non spécifié
+                        @endif</td>
+                        <td>{{ $member->user->email }}</td>
+                        <td>{{ $member->number }}</td>
                         <td class="text-center" style="cursor: pointer">
-                            <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Editer des informations" href="{{route('staff.edit', $staff)}}">
+                            <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Éditer des informations" href="{{ route('staff.edit', $member) }}">
                                 <i class="fas fa-pen"></i>
                             </a>
                             &nbsp;
                             <a data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer">
-                                <i data-bs-toggle="modal" data-bs-target="#delete_staff{{$staff->id}}" class="fas fa-trash-alt text-danger"></i>
+                                <i data-bs-toggle="modal" data-bs-target="#deleteModal" class="fas fa-trash-alt text-danger delete-staff" data-staff-id="{{ $member->id }}"></i>
                             </a>
                         </td>
                     </tr>
                 @endforeach
+
                 </tbody>
             </table>
         </div>
     </div>
-@include('modals.delete')
+    @include('modals.delete')  {{-- Inclusion du modal réutilisable pour la suppression --}}
 @endsection
 
 @section("another_Js")

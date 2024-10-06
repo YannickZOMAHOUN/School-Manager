@@ -10,6 +10,7 @@ class Year extends Model
     use HasFactory;
     protected $fillable=[
         'year',
+        'status',
         'school_id',
     ];
 

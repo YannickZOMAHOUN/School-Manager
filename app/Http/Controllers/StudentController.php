@@ -18,9 +18,8 @@ class StudentController extends Controller
     public function create() {
         try {
             $schoolId = auth()->user()->school->id;
-
             $classrooms = Classroom::where('school_id', $schoolId)->get();
-            $years = Year::where('school_id', $schoolId)->get();
+             $years = Year::where('school_id', $schoolId)->where('status',true)->get();
             return view('dashboard.students.create', compact('classrooms', 'years'));
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'accès à la page de création : " . $e->getMessage());
@@ -30,8 +29,9 @@ class StudentController extends Controller
 
     // Liste tous les étudiants
     public function index(Request $request) {
-        $classrooms = Classroom::all();
-        $years = Year::all();
+        $schoolId = auth()->user()->school->id;
+        $classrooms = Classroom::where('school_id', $schoolId)->get();
+        $years = Year::where('school_id', $schoolId)->where('status',true)->get();
         $school_id = auth()->user()->school_id;
         return view('dashboard.students.list', compact('classrooms', 'years', 'school_id'));
     }
@@ -116,8 +116,9 @@ class StudentController extends Controller
     // Affiche la vue de modification d'un étudiant
     public function edit(Student $student){
         try {
-            $classrooms = Classroom::all();
-            $years = Year::all();
+            $schoolId = auth()->user()->school->id;
+            $classrooms = Classroom::where('school_id', $schoolId)->get();
+            $years = Year::where('school_id', $schoolId)->where('status',true)->get();
             return view('dashboard.students.edit', compact('student', 'classrooms','years'));
         } catch (\Exception $e) {
             Log::error("Erreur lors de l'accès à la page de modification : " . $e->getMessage());

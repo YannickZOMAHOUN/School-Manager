@@ -10,7 +10,7 @@ class ClassroomSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+   /* public function run(): void
     {
         Classroom::create(['classroom' => '6ème']);
         Classroom::create(['classroom' => '5ème']);
@@ -21,5 +21,5 @@ class ClassroomSeeder extends Seeder
         Classroom::create(['classroom' => 'Tle']);
 
 
-    }
+    }*/
 }
