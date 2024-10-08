@@ -32,17 +32,23 @@ class TwoFactorController extends Controller
             return redirect('/login')->withErrors(['session_expired' => 'Votre session a expiré, veuillez vous reconnecter.']);
         }
 
-        // Valider le champ two_FA avec message personnalisé
+        // Valider le champ two_FA avec vérification de longueur et d'intégrité numérique
         $request->validate([
-            'two_fa_code' => 'required',
+            'two_fa_code' => 'required|array|size:6',
+            'two_fa_code.*' => 'digits:1', // Chaque champ doit être un chiffre
         ], [
             'two_fa_code.required' => 'Le code de vérification est requis.',
+            'two_fa_code.size' => 'Le code de vérification doit comporter exactement 6 chiffres.',
+            'two_fa_code.*.digits' => 'Chaque chiffre doit être un chiffre valide.',
         ]);
+
+        // Convertir le tableau en une chaîne de caractères
+        $twoFaCode = implode('', $request->two_fa_code);
 
         $user = Auth::user();
 
         // Vérifier la validité du code two_FA et son expiration
-        if ($user->two_fa_code === $request->two_fa_code && $user->two_fa_expires_at->isFuture()) {
+        if ($user->two_fa_code === $twoFaCode && Carbon::now()->lt($user->two_fa_expires_at)) {
             // Réinitialiser le code two_FA en cas de succès
             $user->resetTwoFactorCode();
 
@@ -54,9 +60,13 @@ class TwoFactorController extends Controller
         }
 
         // Limiter les tentatives de code incorrect
-        $maxAttempts = 3;
+        $maxAttempts = 6;
 
+        // Vérifier le nombre de tentatives échouées
         if (session('two_fa_attempts', 0) >= $maxAttempts) {
+            // Invalider la session utilisateur
+            Auth::logout();
+
             return redirect('/login')->withErrors(['max_attempts' => 'Trop de tentatives échouées, veuillez vous reconnecter.']);
         }
 
@@ -65,6 +75,7 @@ class TwoFactorController extends Controller
 
         return back()->withErrors(['two_fa_code' => 'Le code est incorrect ou a expiré.']);
     }
+
 
     /**
      * Définir la redirection après la vérification two_FA réussie.

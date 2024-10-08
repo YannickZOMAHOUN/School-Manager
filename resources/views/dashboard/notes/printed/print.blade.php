@@ -207,10 +207,9 @@
 
         <!-- Pied de page -->
         <footer>
-            <div>Contact : 123 Rue Christopher...</div>
+            <div>Contact : Yannick ZOMAHOUN +229 68-37-49-02.</div>
         </footer>
     </div>
-
     <!-- Saut de page entre chaque bulletin -->
     <div class="page-break"></div>
     @endforeach

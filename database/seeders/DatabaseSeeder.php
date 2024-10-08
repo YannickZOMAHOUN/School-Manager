@@ -23,6 +23,10 @@ class DatabaseSeeder extends Seeder
             ClassroomSeeder::class,
             RoleSeeder::class,
         ]);*/
+        $this->call([
+
+            LocationSeeder::class,
+        ]);
 
     }
 }

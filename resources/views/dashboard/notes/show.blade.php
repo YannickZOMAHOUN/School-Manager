@@ -134,6 +134,7 @@
                             classroom_id: classroomId
                         },
                         success: function (data) {
+                            console.log(data);
                             $('#student-info').html(`
                                 ${semester == 1 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>` : ''}
                                 ${semester == 2 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>

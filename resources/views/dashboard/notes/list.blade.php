@@ -64,7 +64,7 @@
                 <tr>
                     <th>Nom</th>
                     <th>Prénom(s)</th>
-                    <th>Moyenne Non Coefficié</th>
+                    <th>Moyenne Non Coefficiée</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -123,41 +123,46 @@ document.addEventListener('DOMContentLoaded', function () {
             fetch(`{{ route('notes.load') }}?classroom=${classroom}&year=${year}&subject=${subject}&semester=${semester}`)
                 .then(response => response.json())
                 .then(data => {
-                    console.log(data);
                     const tbody = document.querySelector('#students tbody');
                     tbody.innerHTML = '';
 
                     data.forEach(note => {
-                        let editUrl = '{{ route("note.edit", ":id") }}';
-                            editUrl = editUrl.replace(':id', note.id);
-                            let deleteUrl = '{{ route("note.destroy", ":id") }}';
-                            deleteUrl = deleteUrl.replace(':id', note.id);
+                        let showUrl = '{{ route("note.show", ":id") }}'.replace(':id', note.recording.student.id);
+                        let editUrl = '{{ route("note.edit", ":id") }}'.replace(':id', note.id);
+                        let deleteUrl = '{{ route("note.destroy", ":id") }}'.replace(':id', note.id);
+
                         const tr = document.createElement('tr');
                         tr.innerHTML = `
                             <td>${note.recording.student.name}</td>
                             <td>${note.recording.student.surname}</td>
                             <td>${note.note}</td>
                             <td>
-                                        <a href="${editUrl}" class="btn btn-sm btn-primary">Modifier la note</a>
-                                        <button type="button" class="btn btn-sm btn-danger delete-button" data-id="${note.id}">Supprimer</button>
-                                    </td>
+                                <a class="text-decoration-none text-secondary" href="${showUrl}" title="Voir les détails de l'élève">
+                                    <i class="fas fa-eye"></i>
+                                </a>
+                                &nbsp;
+                                <a href="${editUrl}" class="btn btn-sm btn-primary">Modifier la note</a>
+                                <button type="button" class="btn btn-sm btn-danger delete-button" data-id="${note.id}">
+                                    Supprimer
+                                </button>
+                            </td>
                         `;
                         tbody.appendChild(tr);
                     });
-                });
-                 // Remplir le modal de suppression avec l'ID de la note
-    $(document).on('click', '.delete-button', function () {
-        var noteId = $(this).data('id');
-        var deleteUrl = '{{ route("note.destroy", ":id") }}';
-        deleteUrl = deleteUrl.replace(':id', noteId);
 
-        $('#deleteForm').attr('action', deleteUrl);
-        $('#deleteModal').modal('show');
-    });
+                    document.querySelectorAll('.delete-button').forEach(button => {
+                        button.addEventListener('click', function () {
+                            const noteId = this.getAttribute('data-id');
+                            const deleteUrl = '{{ route("note.destroy", ":id") }}'.replace(':id', noteId);
+                            document.getElementById('deleteForm').setAttribute('action', deleteUrl);
+                            const deleteModal = new bootstrap.Modal(document.getElementById('deleteModal'));
+                            deleteModal.show();
+                        });
+                    });
+                });
         }
     }
 });
 </script>
-
 
 @endsection

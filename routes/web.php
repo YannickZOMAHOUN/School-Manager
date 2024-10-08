@@ -17,11 +17,18 @@ use Illuminate\Support\Facades\Mail;
 
 // Routes d'authentification
 Auth::routes();
+use App\Http\Controllers\LocationController;
+Route::resource('locations', LocationController::class);
+Route::get('locations/departments/{countryId}', [LocationController::class, 'getDepartments']);
+Route::get('locations/cities/{departmentId}', [LocationController::class, 'getCities']);
+
+use App\Http\Controllers\SchoolController;
+Route::get('/departments/{countryId}', [SchoolController::class, 'getDepartments']);
+Route::get('/cities/{departmentId}', [SchoolController::class, 'getCities']);
+
 
 // Redirection vers la page de connexion
-Route::get('/', function () {
-    return redirect('login');
-});
+Route::get('/', function () { return redirect('login');});
 
 // Routes accessibles sans authentification
 Route::resource('school', \App\Http\Controllers\SchoolController::class);

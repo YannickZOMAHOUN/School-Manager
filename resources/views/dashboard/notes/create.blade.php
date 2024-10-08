@@ -89,7 +89,7 @@
         $('#year, #classroom').change(function () {
             let yearId = $('#year').val();
             let classroomId = $('#classroom').val();
-    
+
             if (yearId && classroomId) {
                 $.ajax({
                     url: '{{ route("get.students") }}',
@@ -116,7 +116,7 @@
                 });
             }
         });
-    
+
         // Calculer la moyenne coefficiée
         $(document).on('input', '.moyenne-coeff', function () {
             let coefficient = $('#ratio').val(); // Le coefficient est chargé lorsque la matière est sélectionnée
@@ -126,18 +126,18 @@
                 console.log(`Moyenne Coefficiée: ${moyenneCoeff}`);
             }
         });
-    
+
         // Soumission AJAX sans rechargement de la page
         $('#note-form').submit(function (e) {
             e.preventDefault(); // Empêcher le rechargement de la page
-    
+
             // Remplacer les champs vides par 0 avant de soumettre
             $('.moyenne-coeff').each(function () {
                 if ($(this).val() === '') {
                     $(this).val(0); // Remplacer les champs vides par 0
                 }
             });
-    
+
             $.ajax({
                 url: '{{ route("note.store") }}',
                 type: 'POST',
@@ -148,7 +148,7 @@
                         title: 'Succès',
                         text: 'Les notes ont été enregistrées avec succès.'
                     });
-    
+
                     // Réinitialiser les champs autres que Année Scolaire et Classe
                     $('#subject').val('').trigger('change');
                     $('#semester').val('').trigger('change');
@@ -165,7 +165,7 @@
                 }
             });
         });
-    
+
         // Charger le coefficient et les notes automatiquement lorsqu'une matière est sélectionnée
         $('#subject').change(function () {
     const subjectId = $(this).val();

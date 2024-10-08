@@ -10,8 +10,26 @@ class School extends Model
     use HasFactory;
     protected $fillable=[
         'school',
+         'country_id',
+         'department_id',
+          'city_id'
 
     ];
+
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
+
+    public function city()
+    {
+        return $this->belongsTo(City::class);
+    }
 
     public function recordings(){
         return $this->hasMany(Recording::class);
