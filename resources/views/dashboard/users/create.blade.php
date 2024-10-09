@@ -52,36 +52,34 @@
                                 <div class="col-lg-9 col-md-8">{{ auth()->user()->email }}</div>
                             </div>
                             <div class="row mb-3">
-                                <div class="col-lg-3 col-md-4 label">Rôle</div>
+                                <div class="col-lg-3 col-md-4 label">Fonction</div>
                                 <div class="col-lg-9 col-md-8">{{ auth()->user()->staff->role->role_name }}</div>
                             </div>
                         </div>
 
                         <!-- Profile Edit Tab -->
                         <div class="tab-pane fade profile-edit pt-3" id="profile-edit">
-                            <form action="" method="post" enctype="multipart/form-data">
+                            <form action="{{route('edit_profil')}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row">
                                     <!-- Nom Field -->
                                     <div class="col-12 col-md-6 mb-3">
-                                        <label for="nom" class="form-label fs-16 font-medium">Nom</label>
-                                        <input type="text" class="form-control fs-14" name="nom" value="{{ auth()->user()->staff->name }}">
+                                        <label for="name" class="form-label fs-16 font-medium">Nom</label>
+                                        <input type="text" class="form-control fs-14" name="name" value="{{ auth()->user()->staff->name }}">
                                     </div>
 
                                     <!-- Prénom Field -->
                                     <div class="col-12 col-md-6 mb-3">
-                                        <label for="prenom" class="form-label fs-16 font-medium">Prénom(s)</label>
-                                        <input type="text" class="form-control fs-14" name="prenom" value="{{ auth()->user()->staff->surname }}">
-                                        @error('prenom')
-                                            <span class="text-danger">{{ $message }}</span>
-                                        @enderror
+                                        <label for="surname" class="form-label fs-16 font-medium">Prénom(s)</label>
+                                        <input type="text" class="form-control fs-14" name="surname" value="{{ auth()->user()->staff->surname }}">
+
                                     </div>
 
                                     <!-- Téléphone Field -->
                                     <div class="col-12 col-md-6 mb-3">
-                                        <label for="telephone" class="form-label fs-16 font-medium">Téléphone</label>
-                                        <input type="number" class="form-control" name="telephone" value="{{ auth()->user()->staff->number }}">
-                                        @error('telephone')
+                                        <label for="number" class="form-label fs-16 font-medium">Téléphone</label>
+                                        <input type="tel" class="form-control" name="number" value="{{ auth()->user()->staff->number }}">
+                                        @error('number')
                                             <span class="text-danger">{{ $message }}</span>
                                         @enderror
                                     </div>
@@ -106,7 +104,7 @@
 
                         <!-- Change Password Tab -->
                         <div class="tab-pane fade pt-3" id="profile-change-password">
-                            <form action="" method="post" enctype="multipart/form-data">
+                            <form action="{{route('change_profil')}}" method="post" enctype="multipart/form-data">
                                 @csrf
                                 <div class="row mb-3">
                                     <label for="currentPassword" class="col-lg-3 col-md-4 label">Mot de passe actuel</label>

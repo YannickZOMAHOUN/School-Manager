@@ -138,7 +138,7 @@
                             $('#student-info').html(`
                                 ${semester == 1 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>` : ''}
                                 ${semester == 2 ? `<p><strong>Rang Semestriel :</strong> ${data.rank ? formatRank(data.rank) : 'N/A'}</p>
-                                <p><strong>Rang Annuel :</strong> ${data.rank_annuel ? formatRank(data.rank_annuel) : 'N/A'}</p>` : ''}
+                                ²  <p><strong>Rang Annuel :</strong> ${data.rank_annuel ? formatRank(data.rank_annuel) : 'N/A'}</p>` : ''}
                             `);
 
                             let notesHtml = '';

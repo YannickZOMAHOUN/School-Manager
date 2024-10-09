@@ -203,6 +203,10 @@
             <h3>Récapitulatif</h3>
             <div>Total des moyennes coefficientées : {{ $bulletin['total_moyenne_coefficiee'] }}</div>
             <div>Moyenne générale : {{ $bulletin['moyenne_generale'] }}</div>
+            @if($semester == 2)
+                <p>Moyenne Annuelle : {{ $bulletin['moyenne_annuelle'] }}</p>
+            @endif
+            <div>{{ auth()->user()->school->city->name }} le {{ date('d/m/y') }}</div>
         </div>
 
         <!-- Pied de page -->

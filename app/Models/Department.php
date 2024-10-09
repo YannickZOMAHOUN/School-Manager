@@ -20,6 +20,8 @@ class Department extends Model
     {
         return $this->hasMany(City::class);
     }
+    public function schools(){
+        return $this->hasMany(School::class);
+    }
 
-    
 }

@@ -15,4 +15,7 @@ class Country extends Model
     {
         return $this->hasMany(Department::class);
     }
+    public function schools(){
+        return $this->hasMany(School::class);
+    }
 }

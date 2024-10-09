@@ -168,102 +168,66 @@
 
         // Charger le coefficient et les notes automatiquement lorsqu'une matière est sélectionnée
         $('#subject').change(function () {
-    const subjectId = $(this).val();
-    const classroomId = $('#classroom').val();
-    const yearId = $('#year').val();
+            let subjectId = $(this).val();
+            let classroomId = $('#classroom').val();
+            let yearId = $('#year').val();
+            let semester = $('#semester').val();
 
-    if (subjectId && classroomId) {
-        $.ajax({
-            url: '{{ route("get.ratio") }}',
-            type: 'GET',
-            data: { subject_id: subjectId, classroom_id: classroomId },
-            success: function (data) {
-                console.log(data);
-                $('#ratio').val(data.ratio); // Remplir le coefficient
-                $('#ratio_id').val(data.ratio_id); // Remplir le champ caché pour ratio_id
-            },
-            error: function () {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Une erreur est survenue lors du chargement du coefficient.'
+            if (subjectId && classroomId) {
+                $.ajax({
+                    url: '{{ route("get.ratio") }}',
+                    type: 'GET',
+                    data: {subject_id: subjectId, classroom_id: classroomId},
+                    success: function (data) {
+                        $('#ratio').val(data.ratio); // Remplir le coefficient
+                        $('#ratio_id').val(data.ratio_id); // Remplir le champ caché pour ratio_id
+
+                        // Vérifier si des notes existent pour cette matière et ce semestre
+                        if (yearId && semester) {
+                            $.ajax({
+                                url: '{{ route("get.notes") }}',
+                                type: 'GET',
+                                data: {
+                                    year_id: yearId,
+                                    classroom_id: classroomId,
+                                    subject_id: subjectId,
+                                    semester: semester
+                                },
+                                success: function (response) {
+                                    console.log(response);
+                                    $('#notes-table tbody').empty(); // Vider le tableau avant d'ajouter les nouvelles données
+                                    response.forEach(note => {
+                                        let readOnlyAttr = note.average ? 'readonly' : ''; // Rendre le champ non modifiable si une note existe
+                                        let row = `<tr>
+                                            <td>${note.student_name}</td>
+                                            <td>${note.student_surname}</td>
+                                            <td><input type="number" step="any" value="${note.average || ''}" class="form-control bg-form moyenne-coeff" ${readOnlyAttr}></td>
+                                        </tr>`;
+                                        $('#notes-table tbody').append(row);
+                                    });
+                                },
+                                error: function () {
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Erreur',
+                                        text: 'Une erreur est survenue lors du chargement des notes existantes.'
+                                    });
+                                }
+                            });
+                        }
+                    },
+                    error: function () {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: 'Une erreur est survenue lors du chargement du coefficient.'
+                        });
+                    }
                 });
             }
         });
-    }
-});
-
-$('#subject, #semester').change(function () {
-    const subjectId = $('#subject').val();
-    const classroomId = $('#classroom').val();
-    const yearId = $('#year').val();
-    const semester = $('#semester').val(); // Récupérer la valeur du semestre
-
-    // Vérifier si la matière ou le semestre est sélectionné et si la classe et l'année sont disponibles
-    if ((subjectId && semester) && (classroomId && yearId)) {
-        $.ajax({
-            url: '{{ route("get.ratio") }}',
-            type: 'GET',
-            data: { subject_id: subjectId, classroom_id: classroomId },
-            success: function (data) {
-                $('#ratio').val(data.ratio); // Remplir le coefficient
-                $('#ratio_id').val(data.ratio_id); // Remplir le champ caché pour ratio_id
-            },
-            error: function () {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Une erreur est survenue lors du chargement du coefficient.'
-                });
-            }
-        });
-
-        $.ajax({
-            url: '{{ route("get.notes") }}',
-            type: 'GET',
-            data: {
-                year_id: yearId,
-                classroom_id: classroomId,
-                subject_id: subjectId,
-                semester: semester
-            },
-            beforeSend: function () {
-                $('#loading-indicator').show(); // Afficher un indicateur de chargement
-            },
-            success: function (response) {
-                console.log(response);
-                $('#notes-table tbody').empty(); // Vider le tableau avant d'ajouter de nouvelles données
-
-                if (Array.isArray(response) && response.length === 0) {
-                    $('#notes-table tbody').append('<tr><td colspan="3">Aucune note trouvée.</td></tr>');
-                } else {
-                    response.forEach(note => {
-                        console.log(note);
-                        const readOnlyAttr = note.average !== null ? 'readonly' : ''; // Rendre le champ non modifiable si une note existe
-                        const row = `<tr>
-                            <td>${note.student_name}</td>
-                            <td>${note.student_surname}</td>
-                            <td>
-                                <input type="number" step="any" value="${note.average !== null ? note.average : ''}" name="averages[${note.student_id}]" class="form-control bg-form moyenne-coeff" ${readOnlyAttr} required>
-                            </td>
-                        </tr>`;
-                        $('#notes-table tbody').append(row);
-                    });
-                }
-            },
-            complete: function () {
-                $('#loading-indicator').hide(); // Masquer l'indicateur de chargement
-            },
-            error: function () {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Erreur',
-                    text: 'Une erreur est survenue lors du chargement des notes.'
-                });
-            }
-        });
-    }
-});
     });
-</script>
+    </script>
+
+
 @endsection

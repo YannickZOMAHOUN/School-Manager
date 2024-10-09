@@ -38,6 +38,8 @@ Route::group(['middleware' => ['auth']], function () {
 
     // Routes nécessitant la vérification 2FA après la connexion
     Route::group(['middleware' => ['two_fa']], function () {
+        Route::post('change-profil', [\App\Http\Controllers\UserController::class , 'changeprofil'])->name('change_profil');
+        Route::post('edit-profil', [\App\Http\Controllers\UserController::class , 'editprofil'])->name('edit_profil');
         Route::resource('dashboard', \App\Http\Controllers\HomeController::class);
         Route::resource('classroom', \App\Http\Controllers\ClassroomController::class);
         Route::resource('student', \App\Http\Controllers\StudentController::class);

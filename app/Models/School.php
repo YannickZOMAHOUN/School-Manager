@@ -10,12 +10,10 @@ class School extends Model
     use HasFactory;
     protected $fillable=[
         'school',
-         'country_id',
-         'department_id',
-          'city_id'
-
+        'country_id',
+        'department_id',
+        'city_id'
     ];
-
     public function country()
     {
         return $this->belongsTo(Country::class);

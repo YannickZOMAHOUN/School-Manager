@@ -22,7 +22,7 @@
 
                     <div class="col-12 col-md-4 mb-3">
                         <label for="year" class="font-medium form-label fs-16 text-label">Année Scolaire</label>
-                        <select class="form-select bg-form" name="year" id="year" aria-label="Sélectionnez l'année scolaire" required>
+                        <select class="form-select bg-form" name="year" id="year" required aria-label="Sélectionnez l'année scolaire">
                             <option selected disabled class="text-secondary">Choisissez l'année scolaire</option>
                             @foreach ($years as $year)
                                 <option value="{{ $year->id }}">{{ $year->year }}</option>
@@ -32,7 +32,7 @@
 
                     <div class="col-12 col-md-4 mb-3">
                         <label for="classroom" class="font-medium form-label fs-16 text-label">Classe</label>
-                        <select class="form-select bg-form" name="classroom" id="classroom" aria-label="Sélectionnez une classe" required>
+                        <select class="form-select bg-form" name="classroom" id="classroom" required aria-label="Sélectionnez une classe">
                             <option selected disabled class="text-secondary">Choisissez la classe</option>
                             @foreach ($classrooms as $classroom)
                                 <option value="{{ $classroom->id }}">{{ $classroom->classroom }}</option>
@@ -51,12 +51,12 @@
                 </div>
             </div>
             <div class="d-flex justify-content-between">
-                <!-- Bouton pour imprimer le classement -->
+                <!-- Button to print the ranking -->
                 <button type="button" class="btn btn-primary fs-14" id="print-ranking">
                     <i class="bi bi-printer"></i> Imprimer Classement
                 </button>
 
-                <!-- Bouton pour imprimer les bulletins -->
+                <!-- Button to print the bulletins -->
                 <button type="submit" class="btn btn-success fs-14" id="print-card">
                     <i class="bi bi-printer"></i> Imprimer Bulletins
                 </button>
@@ -66,44 +66,46 @@
 </div>
 
 <script>
-    // Remplir les champs cachés avec les valeurs sélectionnées
-    document.getElementById('year').addEventListener('change', function() {
-        document.getElementById('year_id').value = this.value;
-    });
+    document.addEventListener('DOMContentLoaded', function() {
+        // Fill hidden fields with selected values
+        document.getElementById('year').addEventListener('change', function() {
+            document.getElementById('year_id').value = this.value;
+        });
 
-    document.getElementById('classroom').addEventListener('change', function() {
-        document.getElementById('classroom_id').value = this.value;
-    });
+        document.getElementById('classroom').addEventListener('change', function() {
+            document.getElementById('classroom_id').value = this.value;
+        });
 
-    document.getElementById('semester').addEventListener('change', function() {
-        document.getElementById('semester_hidden').value = this.value;
-    });
+        document.getElementById('semester').addEventListener('change', function() {
+            document.getElementById('semester_hidden').value = this.value;
+        });
 
-    // Fonction pour réinitialiser le formulaire
-    function resetForm() {
-        document.getElementById('year').selectedIndex = 0;
-        document.getElementById('classroom').selectedIndex = 0;
-        document.getElementById('semester').selectedIndex = 0;
-        document.getElementById('year_id').value = '';
-        document.getElementById('classroom_id').value = '';
-        document.getElementById('semester_hidden').value = '';
-    }
+        // Function to reset the form
+        function resetForm() {
+            document.getElementById('year').selectedIndex = 0;
+            document.getElementById('classroom').selectedIndex = 0;
+            document.getElementById('semester').selectedIndex = 0;
+            document.getElementById('year_id').value = '';
+            document.getElementById('classroom_id').value = '';
+            document.getElementById('semester_hidden').value = '';
+        }
 
-    // Générer le classement et ouvrir dans une nouvelle fenêtre
-    document.getElementById('print-ranking').addEventListener('click', function() {
-        var form = document.querySelector('#bulletins-form');
-        form.action = "{{ route('ranking.generate') }}";
-        form.target = "_blank";
-        form.submit();
-        // resetForm(); // Décommentez si vous souhaitez réinitialiser le formulaire après l'impression
-    });
+        // Generate ranking and open in a new window
+        document.getElementById('print-ranking').addEventListener('click', function() {
+            var form = document.querySelector('#bulletins-form');
+            form.action = "{{ route('ranking.generate') }}";
+            form.target = "_blank";
+            form.submit();
+            // resetForm(); // Uncomment if you want to reset the form after printing
+        });
 
-    document.getElementById('print-card').addEventListener('click', function() {
-        var form = document.querySelector('#bulletins-form');
-        form.action = "{{ route('bulletins.generate') }}";
-        form.target = "_blank";
-        form.submit();
-        // resetForm(); // Décommentez si vous souhaitez réinitialiser le formulaire après l'impression
+        document.getElementById('print-card').addEventListener('click', function() {
+            var form = document.querySelector('#bulletins-form');
+            form.action = "{{ route('bulletins.generate') }}";
+            form.target = "_blank";
+            form.submit();
+            // resetForm(); // Uncomment if you want to reset the form after printing
+        });
     });
 </script>
 @endsection
