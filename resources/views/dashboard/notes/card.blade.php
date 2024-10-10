@@ -12,7 +12,7 @@
         <h4 class="font-medium text-color-avt">Impression des bulletins et Classement</h4>
     </div>
     <div class="card py-5">
-        <form action="{{ route('bulletins.generate') }}" method="POST" target="_blank" id="bulletins-form">
+        <form action="" method="POST" target="_blank" id="bulletins-form">
             @csrf
             <div class="card-body">
                 <div class="row">
@@ -55,9 +55,8 @@
                 <button type="button" class="btn btn-primary fs-14" id="print-ranking">
                     <i class="bi bi-printer"></i> Imprimer Classement
                 </button>
-
                 <!-- Button to print the bulletins -->
-                <button type="submit" class="btn btn-success fs-14" id="print-card">
+                <button type="button" class="btn btn-success fs-14" id="print-card">
                     <i class="bi bi-printer"></i> Imprimer Bulletins
                 </button>
             </div>

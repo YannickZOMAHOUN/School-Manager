@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Helpers\NumberHelper;
 use App\Models\Recording;
 use App\Models\Ratio;
 use App\Models\Classroom;
@@ -431,108 +431,151 @@ public function generateRankingPDF(Request $request)
                         }])
                         ->get();
                 }
-
-
                 public function generateBulletinsPDF(Request $request)
-                {
-                    // Validation des données
-                    $request->validate([
-                        'year_id' => 'required|exists:years,id',
-                        'classroom_id' => 'required|exists:classrooms,id',
-                        'semester_hidden' => 'required|in:1,2',
-                    ]);
+{
+    // Validation des données
+    $request->validate([
+        'year_id' => 'required|exists:years,id',
+        'classroom_id' => 'required|exists:classrooms,id',
+        'semester_hidden' => 'required|in:1,2',
+    ]);
 
-                    // Récupérer l'année scolaire, la classe et l'école de l'utilisateur connecté
-                    $year = Year::findOrFail($request->year_id);
-                    $classroom = Classroom::findOrFail($request->classroom_id);
-                    $schoolId = auth()->user()->school->id;
+    // Récupérer l'année scolaire, la classe et l'école de l'utilisateur connecté
+    $year = Year::findOrFail($request->year_id);
+    $classroom = Classroom::findOrFail($request->classroom_id);
+    $schoolId = auth()->user()->school->id;
 
-                    // Récupérer les enregistrements
-                    $recordings = Recording::where('year_id', $request->year_id)
-                        ->where('classroom_id', $request->classroom_id)
-                        ->where('school_id', $schoolId) // Filtrer par école
-                        ->with(['student', 'notes' => function ($query) use ($request) {
-                            $query->where('semester', $request->semester_hidden)->with('ratio', 'subject');
-                        }])
-                        ->get();
+    // Récupérer les enregistrements des élèves
+    $recordings = Recording::where('year_id', $request->year_id)
+        ->where('classroom_id', $request->classroom_id)
+        ->where('school_id', $schoolId)
+        ->with(['student', 'notes' => function ($query) use ($request) {
+            $query->where('semester', $request->semester_hidden)->with('ratio', 'subject');
+        }])
+        ->get();
 
-                    // Vérification si les enregistrements existent
-                    if ($recordings->isEmpty()) {
-                        return redirect()->back()->with('error', 'Aucun bulletin trouvé pour les critères sélectionnés.');
-                    }
+    if ($recordings->isEmpty()) {
+        return redirect()->back()->with('error', 'Aucun bulletin trouvé pour les critères sélectionnés.');
+    }
 
-                    // Préparation des bulletins et calcul des moyennes
-                    $bulletins = $recordings->map(function ($recording) use ($request) {
-                        $totalCoefficient = 0;
-                        $totalMoyenneCoefficiee = 0;
+    // Préparer les bulletins avec les notes et moyennes
+    $bulletins = $recordings->map(function ($recording) use ($request) {
+        $totalCoefficient = 0;
+        $totalMoyenneCoefficiee = 0;
+        $moyenneGeneraleSemester1 = null;
+        $notes = $recording->notes->map(function ($note) use (&$totalCoefficient, &$totalMoyenneCoefficiee) {
+            $coefficient = $note->ratio->ratio ?? 1;
+            $moyenneCoefficiee = $note->note * $coefficient;
 
-                        // Traitement des notes
-                        $notes = $recording->notes->map(function ($note) use (&$totalCoefficient, &$totalMoyenneCoefficiee) {
-                            $coefficient = $note->ratio ? $note->ratio->ratio : 1;
-                            $moyenneCoefficiee = $note->note * $coefficient;
+            $totalCoefficient += $coefficient;
+            $totalMoyenneCoefficiee += $moyenneCoefficiee;
 
-                            $totalCoefficient += $coefficient;
-                            $totalMoyenneCoefficiee += $moyenneCoefficiee;
+            return [
+                'subject' => $note->subject->subject,
+                'coefficient' => $coefficient,
+                'note' => $note->note,
+                'moyenne_coefficiee' => $moyenneCoefficiee,
+                'appreciation' => $this->getAppreciation($note->note),
+            ];
+        });
 
-                            return [
-                                'subject' => $note->subject->subject,
-                                'coefficient' => $coefficient,
-                                'note' => $note->note,
-                                'moyenne_coefficiee' => $moyenneCoefficiee,
-                                'appreciation' => $this->getAppreciation($note->note),
-                            ];
-                        });
+        $moyenneGenerale = $totalCoefficient ? $totalMoyenneCoefficiee / $totalCoefficient : 0;
 
-                        // Calcul de la moyenne générale
-                        $moyenneGenerale = $totalCoefficient ? $totalMoyenneCoefficiee / $totalCoefficient : 0;
-                        $moyenneAnnuelle = $moyenneGenerale;
+        // Calculer la moyenne annuelle si c'est le semestre 2
+        $moyenneAnnuelle = $moyenneGenerale;
+        if ($request->semester_hidden == 2) {
+            $moyenneGeneraleSemester1 = $this->getSemester1Average($recording);
+            if ($moyenneGeneraleSemester1 !== null) {
+                $moyenneAnnuelle = (($moyenneGenerale)*2 + $moyenneGeneraleSemester1) / 3;
+            }
+        }
 
-                        // Si le semestre est 2, calculer la moyenne annuelle
-                        if ($request->semester_hidden == 2) {
-                            $notesSemester1 = Note::where('recording_id', $recording->id)
-                                ->where('semester', 1)
-                                ->where('school_id', auth()->user()->school->id) // Filtrer par école
-                                ->with('subject', 'ratio')
-                                ->get();
-                            $totalCoefficientSemester1 = 0;
-                            $totalMoyenneCoefficieeSemester1 = 0;
+        return [
+            'student' => $recording->student,
+            'notes' => $notes,
+            'total_moyenne_coefficiee' => $totalMoyenneCoefficiee,
+            'moyenne_generale' => number_format($moyenneGenerale, 2),
+            'en_lettres' => NumberHelper::number_to_words(number_format($moyenneGenerale, 2)),
+            'letter_grade' => $this->getLetterGrade($moyenneGenerale),
+            'moyenne_semestre'=> number_format($moyenneGeneraleSemester1, 2),
+            'moyenne_annuelle' => number_format($moyenneAnnuelle, 2),
 
-                            // Traitement des notes du semestre 1
-                            $notesSemester1->each(function ($note) use (&$totalCoefficientSemester1, &$totalMoyenneCoefficieeSemester1) {
-                                $coefficient = $note->ratio->ratio ?? 1;  // S'assurer qu'il y a un coefficient
-                                $moyenneCoefficiee = $note->note * $coefficient;
+        ];
+    });
 
-                                $totalCoefficientSemester1 += $coefficient;
-                                $totalMoyenneCoefficieeSemester1 += $moyenneCoefficiee;
-                            });
+    // Calculer les rangs par semestre
+    $bulletins = $bulletins->sortByDesc('moyenne_generale')->values()->map(function ($bulletin, $index) {
+        $bulletin['rank'] = $index + 1; // Rang 1 pour la meilleure moyenne
+        return $bulletin;
+    });
 
-                            $moyenneGeneraleSemester1 = $totalCoefficientSemester1 ? $totalMoyenneCoefficieeSemester1 / $totalCoefficientSemester1 : 0;
-                            $moyenneAnnuelle = (($moyenneGenerale * 2) + $moyenneGeneraleSemester1) / 3;
-                        }
+    // Calculer les rangs annuels si c'est le semestre 2
+    if ($request->semester_hidden == 2) {
+        $bulletins = $bulletins->sortByDesc('moyenne_annuelle')->values()->map(function ($bulletin, $index) {
+            $bulletin['annual_rank'] = $index + 1; // Rang 1 pour la meilleure moyenne annuelle
+            return $bulletin;
+        });
+    }
 
-                        return [
-                            'student' => $recording->student,
-                            'notes' => $notes,
-                            'total_moyenne_coefficiee' => $totalMoyenneCoefficiee,
-                            'moyenne_generale' => number_format($moyenneGenerale, 2),
-                            'letter_grade' => $this->getLetterGrade($moyenneGenerale),
-                            'moyenne_annuelle' => number_format($moyenneAnnuelle, 2),
-                        ];
-                        
-                    });// Trier par moyenne générale décroissante
+    // Obtenir la plus forte et la plus faible moyenne pour le semestre et pour l'année
+    $maxMoyenneSemestre = $bulletins->max('moyenne_generale');
+    $minMoyenneSemestre = $bulletins->min('moyenne_generale');
+
+    $maxMoyenneAnnuelle = null;
+    $minMoyenneAnnuelle = null;
+
+    if ($request->semester_hidden == 2) {
+        $maxMoyenneAnnuelle = $bulletins->max('moyenne_annuelle');
+        $minMoyenneAnnuelle = $bulletins->min('moyenne_annuelle');
+    }
+
+    //dd($bulletins, $year, $classroom, $schoolId, $recordings,$maxMoyenneSemestre);
+           // Générer le PDF avec les bulletins et les informations supplémentaires
+    $pdf = Pdf::loadView('dashboard.notes.printed.print', [
+        'bulletins' => $bulletins,
+        'year' => $year->year,
+        'classroom' => $classroom->classroom,
+        'semester' => $request->semester_hidden,
+        'classSize' => $recordings->count(),
+        'maxMoyenneSemestre' => number_format($maxMoyenneSemestre, 2),
+        'minMoyenneSemestre' => number_format($minMoyenneSemestre, 2),
+        'maxMoyenneAnnuelle' => $maxMoyenneAnnuelle ? number_format($maxMoyenneAnnuelle, 2) : null,
+        'minMoyenneAnnuelle' => $minMoyenneAnnuelle ? number_format($minMoyenneAnnuelle, 2) : null,
+    ]);
+
+    return $pdf->stream('Bulletins-' . $classroom->classroom . '-semestre' . $request->semester_hidden . '-' . $year->year . '.pdf');
+}
+
+/**
+ * Obtenir la moyenne du semestre 1 pour un enregistrement donné.
+ */
+protected function getSemester1Average($recording)
+{
+    $notesSemester1 = Note::where('recording_id', $recording->id)
+        ->where('semester', 1)
+        ->where('school_id', auth()->user()->school->id)
+        ->with('subject', 'ratio')
+        ->get();
+
+    if ($notesSemester1->isEmpty()) {
+        return null;
+    }
+
+    $totalCoefficient = 0;
+    $totalMoyenneCoefficiee = 0;
+
+    $notesSemester1->each(function ($note) use (&$totalCoefficient, &$totalMoyenneCoefficiee) {
+        $coefficient = $note->ratio->ratio ?? 1;
+        $moyenneCoefficiee = $note->note * $coefficient;
+
+        $totalCoefficient += $coefficient;
+        $totalMoyenneCoefficiee += $moyenneCoefficiee;
+    });
+
+    return $totalCoefficient ? $totalMoyenneCoefficiee / $totalCoefficient : null;
+}
 
 
-                    // Générer le PDF pour tous les bulletins
-                    $pdf = Pdf::loadView('dashboard.notes.printed.print', [
-                        'bulletins' => $bulletins,
-                        'year' => $year->year,
-                        'classroom' => $classroom->classroom,
-                        'semester' => $request->semester_hidden,
-                        'classSize' => $recordings->count(),
-                    ]);
-
-                    return $pdf->stream('Bulletins-' . $classroom->classroom . '-semestre' . $request->semester_hidden . '-' . $year->year . '.pdf');
-                }
 
 
     // Méthodes privées pour l'appréciation et la note en lettre
