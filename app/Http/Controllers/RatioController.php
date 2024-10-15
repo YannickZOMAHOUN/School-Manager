@@ -28,7 +28,7 @@ class RatioController extends Controller
             $levels = Classroom::where('school_id', auth()->user()->school->id)  // Filtrer les classes par école
             ->pluck('classroom')  // Extraire les noms des classes
             ->map(function ($classroom) {
-                return substr($classroom, 0, 3);  // Récupérer les 3 premiers caractères pour extraire le niveau
+                return substr($classroom, 0, 5 );  // Récupérer les 3 premiers caractères pour extraire le niveau
             })
             ->unique();  // Obtenir les niveaux uniques
 

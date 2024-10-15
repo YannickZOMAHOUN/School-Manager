@@ -6,10 +6,17 @@
     <title>Bulletin(s)</title>
     <style>
         body {
-            font-family: DejaVu Sans, sans-serif;
+            font-family: Arial, Helvetica, sans-serif;
             margin: 0;
             padding: 0;
-            background-color: #f4f4f9;
+            background-color: #fff;
+            font-size: 14px;
+            min-height: 100vh;
+        }
+
+        .header-info-table {
+            width: 100%;
+            border-spacing: 10px;
         }
 
         .header {
@@ -41,24 +48,24 @@
         .underline {
             display: block;
             width: 100%;
-            border-bottom: 2px solid #1d3557;
+            border-bottom: 2px solid rgb(56,56,56);
             margin-top: 5px;
         }
 
         h1 {
             margin: 0;
             font-size: 18px;
-            color: #2c3e50;
+            color: rgb(56,56,56);
             text-align: center;
         }
 
         .progress-card {
             width: 100%;
-            background-color: #fff;
             padding: 15px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
             margin-bottom: 20px;
+            position: relative; /* Pour le positionnement des signatures */
+            box-sizing: border-box;
+            min-height: calc(100vh - 200px); /* Ajuste la hauteur pour laisser de la place pour les signatures */
         }
 
         .header-info-table td {
@@ -67,7 +74,6 @@
             padding: 5px 0;
         }
 
-        /* Grades table */
         .grades-table {
             width: 100%;
             border-collapse: collapse;
@@ -75,68 +81,75 @@
         }
 
         .grades-table th, .grades-table td {
-            border: 1px solid #ddd;
+            border: 1px solid rgb(56,56,56);
             padding: 8px;
             text-align: center;
             font-size: 12px;
         }
 
         .grades-table th {
-            background-color: #457b9d;
+            background-color: rgb(56,56,56);
             color: white;
         }
 
-        /* Average block */
+        .average, .stat, .appreciations {
+            width: 30%;
+            padding: 10px;
+            margin-bottom: 20px;
+            font-size: 14px;
+            line-height: 2.5;
+            display: inline-block;
+            vertical-align: top;
+        }
+
         .average {
-            width: 30%;
             float: left;
-            background-color: #e8f0fe;
-            padding: 10px;
-            border-radius: 8px;
-            margin-right: 20px;
-            font-size: 12px;
         }
 
-        /* Stat block */
         .stat {
-            width: 30%;
             float: left;
-            background-color: #fef5e7;
-            padding: 10px;
-            border-radius: 8px;
-            font-size: 12px;
+            margin-left: 5%;
         }
 
-        .signature {
-            clear: both;
-            padding-top: 20px;
-            text-align: center;
-            font-size: 12px;
+        .appreciations {
+            float: right;
         }
 
         .signature-left {
-            float: left;
-            width: 40%;
-            text-align: center;
+            position: absolute;
+            left: 5%;
+            bottom: 200px; /* Ajusté pour rester en bas de la carte */
+            text-align: left;
         }
 
         .signature-right {
-            float: right;
-            width: 40%;
-            text-align: center;
+            position: absolute;
+            right: 5%;
+            bottom: 200px; /* Ajusté pour rester en bas de la carte */
+            text-align: right;
         }
-
+        .signature {
+            position: absolute;
+            right: 5%;
+            bottom: 150px; /* Ajusté pour rester en bas de la carte */
+            text-align: right;
+        }
         footer {
             font-size: 10px;
-            color: #777;
+            color: rgb(56,56,56);
             text-align: center;
-            margin-top: 30px;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
         }
 
         .page-break {
             page-break-after: always;
         }
 
+        strong {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -158,7 +171,7 @@
         <div class="underline"></div>
     </div>
 
-    <div style="font-family: Arial, Helvetica, sans-serif; font-size: 20px; text-align: center;">
+    <div style="font-family: Arial, Helvetica, sans-serif; font-size: 20px; text-align: center; color: rgb(56,56,56);">
         BULLETIN DE NOTES
     </div>
 
@@ -170,19 +183,19 @@
         <div class="header-info">
             <table class="header-info-table">
                 <tr>
-                    <td>Matricule : {{ $bulletin['student']['matricule'] }}</td>
-                    <td>Nom : {{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</td>
+                    <td><strong>Matricule :</strong> {{ $bulletin['student']['matricule'] }}</td>
+                    <td><strong>Nom : </strong>{{ $bulletin['student']['name'] }} {{ $bulletin['student']['surname'] }}</td>
                 </tr>
                 <tr>
-                    <td>Date et lieu de naissance : {{ \Carbon\Carbon::parse($bulletin['student']['birthday'])->format('d/m/Y') }} à {{ $bulletin['student']['birthplace'] }}</td>
-                    <td>Année scolaire : {{ $year }}</td>
+                    <td><strong>Date et lieu de naissance :</strong>{{ \Carbon\Carbon::parse($bulletin['student']['birthday'])->format('d/m/Y') }} à {{ $bulletin['student']['birthplace'] }}</td>
+                    <td><strong>Année scolaire :</strong> {{ $year }}</td>
                 </tr>
                 <tr>
-                    <td>Classe : {{ $classroom }}</td>
-                    <td>Semestre : {{ $semester }}</td>
+                    <td><strong>Classe :</strong> {{ $classroom }}</td>
+                    <td><strong>Semestre :</strong> {{ $semester }}</td>
                 </tr>
                 <tr>
-                    <td>Effectif de la classe : {{ $classSize }}</td>
+                    <td><strong>Effectif de la classe :</strong> {{ $classSize }}</td>
                 </tr>
             </table>
         </div>
@@ -192,7 +205,7 @@
                 <tr>
                     <th>Matière</th>
                     <th>Coefficient</th>
-                    <th>Moyenne /20 </th>
+                    <th>Moyenne /20</th>
                     <th>Moyenne Coefficiée</th>
                     <th>Appréciation</th>
                 </tr>
@@ -210,43 +223,57 @@
             </tbody>
             <tfoot>
                 <tr>
-                    <th colspan="3" class="text-end">Total :</th>
-                    <th class="text-end">{{ $bulletin['total_moyenne_coefficiee']}}</th>
+                    <th colspan="4" class="text-end">Total :</th>
+                    <th class="text-end">{{ $bulletin['total_moyenne_coefficiee'] }}</th>
                 </tr>
             </tfoot>
         </table>
 
         <div class="average">
-            <div>Moyenne générale : {{ $bulletin['moyenne_generale'] }}</div>
-            <div>En lettres : {{ $bulletin['en_lettres'] }}</div>
-            <div>Rang semestriel: {{ $bulletin['rank']}}</div>
-
+            <div><strong>Moyenne générale : </strong>{{ $bulletin['moyenne_generale'] }}</div>
+            <div><strong>En lettres :</strong> {{ $bulletin['en_lettres'] }}</div>
+            <div><strong>Rang semestriel:</strong> {{ $bulletin['rank'] }}</div>
             @if ($semester == 2)
-                <div>Moyenne semestre 1: {{ $bulletin['moyenne_semestre'] }}</div>
-                <div>Moyenne Annuelle: {{ $bulletin['moyenne_annuelle'] }}</div>
-                <div>Rang Annuel: {{ $bulletin['annual_rank'] }}</div>
+                <div><strong>Moyenne semestre 1: </strong>{{ $bulletin['moyenne_semestre'] }}</div>
+                <div><strong>Moyenne Annuelle:</strong> {{ $bulletin['moyenne_annuelle'] }}</div>
+                <div><strong>Rang Annuel: </strong>{{ $bulletin['annual_rank'] }}</div>
             @endif
         </div>
 
         <div class="stat">
-            <div> Plus forte moyenne:{{ $maxMoyenneSemestre}} </div>
-            <div> Plus faible moyenne:{{$minMoyenneSemestre}} </div>
+            <div><strong>Plus forte moyenne:</strong> {{ $maxMoyenneSemestre }}</div>
+            <div><strong>Plus faible moyenne: </strong>{{ $minMoyenneSemestre }}</div>
             @if ($semester == 2)
-                <div>Plus forte moyenne annuelle: {{ $maxMoyenneAnnuelle}}</div>
-                <div>Plus faible moyenne annuelle: {{ $minMoyenneAnnuelle }}</div>
+                <div><strong>Plus forte moyenne annuelle:</strong> {{ $maxMoyenneAnnuelle }}</div>
+                <div><strong>Plus faible moyenne annuelle:</strong> {{ $minMoyenneAnnuelle }}</div>
             @endif
         </div>
-
-        <div class="signature">
-            <div>{{ auth()->user()->school->city->name }} le {{ date('d/m/y') }}</div>
-            <div class="signature-left">Professeur(e) Principal(e)</div>
-            <div class="signature-right">{{ auth()->user()->staff->surname }} {{ auth()->user()->staff->name}} <br> {{ auth()->user()->staff->role->role_name}} du {{ auth()->user()->school->school}} </div>
+        <div class="appreciations">
+            <label style="margin-left: 20px;">
+                <input type="checkbox" {{ $bulletin['moyenne_generale'] >= 14 ? 'checked' : '' }}> Félicitations
+            </label> <br>
+            <label style="margin-left: 20px;">
+                <input type="checkbox" {{ $bulletin['moyenne_generale'] >= 10 && $bulletin['moyenne_generale'] < 14 ? 'checked' : '' }}> Encouragement
+            </label> <br>
+            <label style="margin-left: 20px;">
+                <input type="checkbox" {{ $bulletin['moyenne_generale'] < 10 ? 'checked' : '' }}> Avertissement
+            </label>
         </div>
 
-        <footer>
-            <div>Contact : Yannick ZOMAHOUN +229 68-37-49-02.</div>
-        </footer>
+        <div class="signature-left">
+            <strong>Professeur(e) Principal(e)</strong>
+        </div>
+        <div class="signature-right">
+            <p>{{ auth()->user()->school->city->name }} le {{ now()->format('d/m/Y') }}</p><br><br><br><br>
+            <strong>{{ auth()->user()->staff->surname }} {{ auth()->user()->staff->name }}</strong>
+        </div>
+        <div class="signature"> {{ auth()->user()->staff->role->role_name }} du {{ auth()->user()->school->school }}</div>
     </div>
+
+    <footer>
+        Bulletin de l'année scolaire {{ $year }}, généré le {{ now()->format('d/m/Y') }}
+    </footer>
+
     <div class="page-break"></div>
     @endforeach
 </body>
