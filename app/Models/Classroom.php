@@ -10,6 +10,9 @@ class Classroom extends Model
     use HasFactory;
     protected $fillable=[
         'classroom',
+        'status',
+        'promotion_recording_id',
+        'year_id',
         'school_id',
     ];
 
@@ -18,8 +21,14 @@ class Classroom extends Model
     }
     public function ratios(){
         return $this->hasMany(Ratio::class);
-}
-public function school(){
-    return $this->belongsTo(School::class);
-}
+    }
+    public function school(){
+        return $this->belongsTo(School::class);
+    }
+    public function promotionrecording(){
+        return $this->belongsTo(PromotionRecording::class);
+    }
+    public function year(){
+        return $this->belongsTo(Year::class);
+    }
 }

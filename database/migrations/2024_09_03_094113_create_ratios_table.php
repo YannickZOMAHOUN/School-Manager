@@ -20,6 +20,8 @@ return new class extends Migration
             $table->foreign('classroom_id')->references('id')->on('classrooms')->onDelete('cascade');
             $table->unsignedBigInteger('school_id')->nullable();
             $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+            $table->unsignedBigInteger('year_id')->nullable();
+            $table->foreign('year_id')->references('id')->on('years')->onDelete('cascade');
             $table->timestamps();
         });
     }

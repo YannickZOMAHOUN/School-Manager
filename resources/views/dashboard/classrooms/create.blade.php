@@ -6,114 +6,79 @@
 @endsection
 
 @section('content')
-<div class="row col-12  pb-5">
-        <div class="my-3">
-            <h4 class="font-medium  text-color-avt">Enregistrement d'une nouvelle classe </option>
-            </h4>
-        </div>
+<div class="row col-12 pb-5">
+    <div class="my-3">
+        <h4 class="font-medium text-color-avt">Enregistrement des groupes pédagogiques</h4>
+    </div>
 
-        <div class="card py-5">
-            <form action="{{route('classroom.store') }}" method="POST">
+    <div class="card py-5">
+        <form action="{{route('classroom.store') }}" method="POST">
             @csrf
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-12 col-md-12 mb-3">
-                                <label for="classroom" class="font-medium fs-16 text-black form-label ">Classe
-                                </label>
-                                <input type="text" name="classroom" id="classroom" class="form-control bg-form " placeholder="">
-                         </div>
-
-                            <div class="row d-flex justify-content-center mt-2">
-
-                                <button type="reset" class="btn bg-secondary w-auto me-2 text-white">Annuler</button>
-                                <button type="submit" class="btn btn-success w-auto">Enregistrer</button>
-                            </div>
-
-                        </div>
-                    </div>
+            <div class="card-body">
+                <div class="col-12 col-md-12 mb-3">
+                    <label for="year" class="font-medium form-label fs-16 text-label">Année Scolaire</label>
+                    <select class="form-select bg-form" name="year" id="year" required aria-label="Sélectionnez l'année scolaire">
+                        <option selected disabled class="text-secondary">Choisissez l'année scolaire</option>
+                        @foreach ($years as $year)
+                            <option value="{{ $year->id }}">{{ $year->year }}</option>
+                        @endforeach
+                    </select>
                 </div>
-            </form>
-         </div>
-
- </div>
-
- <div class="d-flex justify-content-between my-2 flex-wrap">
-        <div class="text-color-avt fs-22">Liste des classes
-        </div>
+                <table class="table mt-3" id="classrooms-table">
+                    <thead>
+                        <tr>
+                            <th>Promotion</th>
+                            <th>Groupe(s) Pédagogique(s)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr></tr>
+                    </tbody>
+                </table>
+            </div>
+            <button type="submit" class="btn btn-primary mt-3">Enregistrer</button>
+        </form>
     </div>
+</div>
 
-    <div class="card p-3">
-        <div class="table-responsive">
-            <table id="example" class="table table-striped table-bordered" style="width:100%">
-                <thead>
+<script src="{{ asset('js/jquery-3.6.0.min.js') }}"></script>
+<script src="{{ asset('js/bootstrap.bundle.min.js') }}"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-                <tr class="text-center">
-                    <th>Nom</th>
-                    <th>Actions</th>
-                </tr>
-                </thead>
-                <tbody>
-               @foreach($classrooms as $key=>$classroom)
-               @if($classroom->school_id == auth()->user()->school->id)
-                    <tr>
-                        <td>{{ $classroom->classroom }}</td>
-                        <td class="text-center" style="cursor: pointer">
-                            <a class="text-decoration-none" data-bs-toggle="tooltip" data-bs-placement="top" title="Editer la classe" href="{{route('classroom.edit', $classroom)}}"> <i class="fas fa-pen"></i> </a>
-                            &nbsp;
-                            <a data-bs-toggle="tooltip" data-bs-placement="top" title="Supprimer cette classe " class="">
-                                    <i data-bs-toggle="modal" data-bs-target="#delete_classroom{{$classroom->id }}" class="fas fa-trash-alt text-danger" ></i>
-                            </a>
-                        </td>
-                    </tr>
-                    <div class="modal fade" id="delete_classroom{{$classroom->id }}" tabindex="-1">
-                                <div class="modal-dialog modal-dialog-centered">
-                                    <div class="modal-content">
-                                        <div class="modal-header">
-                                            <h5 class="modal-title text-color-avt">Confirmer suppression de la classe {{ $classroom->classroom }}</h5>
-                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                        </div>
-                                        <div class="modal-body">
-                                            <form action=" {{route('classroom.destroy',$classroom) }} " method="POST">
-                                                @csrf
-                                                @method('delete')
-                                                <div class="d-flex justify-content-center">
-                                                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
-                                                    <button type="submit" class="btn btn-danger ms-2">Confirmer </button>
-                                                </div>
-                                            </form>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                            @endif
-               @endforeach
-                </tbody>
-            </table>
-        </div>
-    </div>
-@endsection
-
-@section("another_Js")
-
-    <script src="{{asset('js/datatable/jquery-3.5.1.js')}}"></script>
-    <script src="{{asset('js/datatable/jquery.dataTables.min.js')}}"></script>
-    <script src="{{asset('js/datatable/dataTables.bootstrap4.min.js')}}"></script>
-
-    <script>
-        $(document).ready(function(){
-            $('#example').DataTable(
-                {
-                    "language": {
-                        "url": "{{asset('js/datatable/French.json')}}"
-                    },
-                    responsive: true,
-                    "columnDefs": [ {
-                        "targets": -1,
-                        "orderable": false
-                    } ]
+<script type="text/javascript">
+$(document).ready(function(){
+    $('#year').change(function () {
+        let yearId = $('#year').val();
+        if (yearId) {
+            $.ajax({
+                url: '{{ route("get.promotions") }}',
+                type: 'GET',
+                data: {year_id: yearId},
+                success: function (data) {
+                    $('#classrooms-table tbody').empty();
+                    data.forEach(function (promotion) {
+                        let row = `<tr>
+                            <td>${promotion.promotion}</td>
+                            <td>
+                                <input type="text" name="classrooms[${promotion.id}]"
+                                class="form-control bg-form"
+                                placeholder="Entrez les groupes séparés par des virgules"
+                                required>
+                            </td>
+                        </tr>`;
+                        $('#classrooms-table tbody').append(row);
+                    });
+                },
+                error: function (xhr, status, error) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Erreur',
+                        text: xhr.responseJSON?.message || 'Une erreur est survenue lors du chargement.'
+                    });
                 }
-            );
-            $('.alert').alert('close')
-        });
-    </script>
+            });
+        }
+    });
+});
+</script>
 @endsection

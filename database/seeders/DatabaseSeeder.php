@@ -24,8 +24,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
         ]);*/
         $this->call([
-
             LocationSeeder::class,
+            PromotionSeeder::class,
         ]);
 
     }

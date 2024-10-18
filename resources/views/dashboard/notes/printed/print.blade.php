@@ -131,9 +131,10 @@
         .signature {
             position: absolute;
             right: 5%;
-            bottom: 150px; /* Ajusté pour rester en bas de la carte */
+            bottom: 180px; /* Ajusté pour rester en bas de la carte */
             text-align: right;
         }
+
         footer {
             font-size: 10px;
             color: rgb(56,56,56);
@@ -259,7 +260,15 @@
                 <input type="checkbox" {{ $bulletin['moyenne_generale'] < 10 ? 'checked' : '' }}> Avertissement
             </label>
         </div>
-
+        <div class="mention">
+            @if ($semester == 2)
+                @if ($bulletin['moyenne_annuelle'] >= 10)
+                    <strong>Décision :</strong> Passe en classe supérieure
+                @else
+                    <strong>Décision :</strong> Redouble la classe
+                @endif
+            @endif
+        </div>
         <div class="signature-left">
             <strong>Professeur(e) Principal(e)</strong>
         </div>

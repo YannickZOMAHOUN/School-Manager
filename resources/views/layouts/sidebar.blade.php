@@ -73,14 +73,19 @@
           <i class="bi bi-gear"></i><span>&nbsp; Paramètres</span><i class="bi bi-chevron-down ms-auto"></i>
         </a>
         <ul id="settings-nav" class="nav-content collapse" data-bs-parent="#sidebar-nav">
+            <li>
+                <a href="{{ route('year.create') }}" class="text-decoration-none">
+                  <i class="bi bi-calendar2-day-fill"></i><span>&nbsp;Année Scolaire</span>
+                </a>
+              </li>
           <li>
-            <a href="{{ route('classroom.create') }}" class="text-decoration-none">
-              <i class="bi bi-columns-gap"></i><span>&nbsp;Classe</span>
+            <a href="{{ route('promotion.create') }}" class="text-decoration-none">
+              <i class="bi bi-columns-gap"></i><span>&nbsp;Promotion</span>
             </a>
           </li>
           <li>
-            <a href="{{ route('year.create') }}" class="text-decoration-none">
-              <i class="bi bi-calendar2-day-fill"></i><span>&nbsp;Année Scolaire</span>
+            <a href="{{ route('classroom.create') }}" class="text-decoration-none">
+              <i class="bi bi-columns-gap"></i><span>&nbsp;Classe</span>
             </a>
           </li>
           <li>

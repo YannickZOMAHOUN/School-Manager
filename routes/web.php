@@ -42,6 +42,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('edit-profil', [\App\Http\Controllers\UserController::class , 'editprofil'])->name('edit_profil');
         Route::resource('dashboard', \App\Http\Controllers\HomeController::class);
         Route::resource('classroom', \App\Http\Controllers\ClassroomController::class);
+        Route::resource('promotion', \App\Http\Controllers\PromotionController::class);
         Route::resource('student', \App\Http\Controllers\StudentController::class);
         Route::resource('note', \App\Http\Controllers\NoteController::class);
         Route::resource('year', \App\Http\Controllers\YearController::class);
@@ -72,6 +73,8 @@ Route::group(['middleware' => ['auth']], function () {
 
         Route::get('disable/{year}',[\App\Http\Controllers\YearController::class,'disableyear'])->name('disable_year');
         Route::get('activate/{year}',[\App\Http\Controllers\YearController::class,'activateyear'])->name('activate_year');
+
+        Route::get('/get-promotions', [\App\Http\Controllers\PromotionController::class, 'getpromotions'])->name('get.promotions');
     });
 
     // Routes protégées nécessitant uniquement l'authentification, pas de 2FA

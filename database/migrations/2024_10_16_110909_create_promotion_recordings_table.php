@@ -11,16 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('subjects', function (Blueprint $table) {
+        Schema::create('promotion_recordings', function (Blueprint $table) {
             $table->id();
-            $table->string('subject');
-            $table->boolean('status')->default(true);
-            $table->unsignedBigInteger('classroom_id');
-            $table->foreign('classroom_id')->references('id')->on('classrooms')->onDelete('cascade');
-            $table->unsignedBigInteger('school_id')->nullable();
-            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
+            $table->unsignedBigInteger('promotion_id');
+            $table->foreign('promotion_id')->references('id')->on('promotions')->onDelete('cascade');
             $table->unsignedBigInteger('year_id')->nullable();
             $table->foreign('year_id')->references('id')->on('years')->onDelete('cascade');
+            $table->unsignedBigInteger('school_id')->nullable();
+            $table->foreign('school_id')->references('id')->on('schools')->onDelete('cascade');
             $table->timestamps();
         });
     }
@@ -30,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('subjects');
+        Schema::dropIfExists('promotion_recordings');
     }
 };
